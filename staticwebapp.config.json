@@ -1,9 +1,6 @@
 {
-  "routes": [
-    {
-      "route": "/*",
-      "methods": ["GET"],
-      "rewrite": "/index.html"
-    }
-  ]
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/*.css", "/*.js"]
+  }
 }
