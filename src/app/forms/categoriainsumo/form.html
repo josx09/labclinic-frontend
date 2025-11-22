@@ -1,0 +1,127 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3 text-primary fw-semibold">🧩 Categorías de Insumo</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()" autocomplete="off" novalidate>
+      <div class="row g-3">
+        <!-- ID -->
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">ID</label>
+          <input class="form-control" type="number" [(ngModel)]="model.id" name="id" readonly />
+        </div>
+
+        <!-- Nombre -->
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">Nombre</label>
+          <input
+            class="form-control"
+            type="text"
+            [(ngModel)]="model.nombre"
+            name="nombre"
+            placeholder="Ej. Reactivos, Material médico..."
+            required
+          />
+        </div>
+
+        <!-- Descripción -->
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">Descripción</label>
+          <input
+            class="form-control"
+            type="text"
+            [(ngModel)]="model.descripcion"
+            name="descripcion"
+            placeholder="Describe el tipo de insumo..."
+          />
+        </div>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="mt-3 d-flex justify-content-end gap-2">
+        <button class="btn btn-primary" type="submit" [disabled]="loading">
+          {{ editingId ? '💾 Actualizar' : '💾 Guardar' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="reset()" [disabled]="loading">
+          🧹 Nuevo
+        </button>
+      </div>
+
+      <!-- MENSAJES -->
+      <div *ngIf="error" class="alert alert-danger mt-3 py-2">{{ error }}</div>
+      <div *ngIf="!error && !loading && items.length === 0" class="alert alert-light border mt-3 py-2">
+        📭 No hay categorías registradas aún.
+      </div>
+    </form>
+
+    <hr class="my-4" />
+
+    <!-- LISTADO -->
+    <div *ngIf="loading" class="text-center my-3 text-muted">
+      <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+      Cargando categorías...
+    </div>
+
+    <div class="table-responsive" *ngIf="!loading && items.length > 0">
+      <table class="table table-sm table-hover align-middle shadow-sm">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 80px;">ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th class="text-center" style="width: 150px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{ r.id }}</td>
+            <td>{{ r.nombre }}</td>
+            <td>{{ r.descripcion || '—' }}</td>
+            <td class="text-center">
+              <button
+                class="btn btn-sm btn-outline-primary me-1"
+                (click)="edit(r)"
+                type="button"
+                [disabled]="loading"
+              >
+                ✏️ Editar
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="confirmRemove(r.id)"
+                type="button"
+                [disabled]="loading"
+              >
+                🗑️ Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div
+  class="modal fade"
+  [class.show]="showDeleteModal"
+  [style.display]="showDeleteModal ? 'block' : 'none'"
+  tabindex="-1"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white py-2">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelRemove()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">¿Seguro que deseas eliminar esta categoría de insumo?</p>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="cancelRemove()">Cancelar</button>
+        <button type="button" class="btn btn-danger btn-sm" (click)="remove()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

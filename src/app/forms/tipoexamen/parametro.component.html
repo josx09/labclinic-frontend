@@ -1,0 +1,196 @@
+<!-- =======================
+Formulario de parámetros
+======================= -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h5 class="text-primary fw-semibold mb-3">⚙️ Parámetros del examen</h5>
+
+    <form (ngSubmit)="save()" novalidate autocomplete="off">
+      <div class="row">
+        <div class="col-md-3 mb-2">
+          <label class="form-label fw-bold">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="model.nombre"
+            name="nombre"
+            required
+            placeholder="Ej: Hemoglobina"
+          />
+        </div>
+
+        <div class="col-md-2 mb-2">
+          <label class="form-label fw-bold">Unidad</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="model.unidad"
+            name="unidad"
+            placeholder="Ej: g/dL"
+          />
+        </div>
+
+        <div class="col-md-3 mb-2">
+          <label class="form-label fw-bold">Rango de referencia</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="model.rangoReferencia"
+            name="rangoReferencia"
+            placeholder="Ej: 12 - 15"
+          />
+        </div>
+
+        <div class="col-md-2 mb-2">
+          <label class="form-label fw-bold">Observaciones</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="model.observaciones"
+            name="observaciones"
+            placeholder="Ej: Valor normal"
+          />
+        </div>
+
+        <div class="col-md-2 mb-2">
+          <label class="form-label fw-bold">Orden</label>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="model.orden"
+            name="orden"
+            min="1"
+            placeholder="Ej: 1"
+          />
+        </div>
+      </div>
+
+      <div class="row mt-2 align-items-center">
+        <div class="col-md-4">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="tituloCheck"
+              [(ngModel)]="model.esTitulo"
+              name="esTitulo"
+              [checked]="model.esTitulo"
+            />
+            <label for="tituloCheck" class="form-check-label fw-semibold">
+              ¿Es título de sección?
+            </label>
+          </div>
+        </div>
+
+        <div class="col-md-8 text-end">
+          <button
+            class="btn btn-primary me-2"
+            type="submit"
+            [disabled]="loading"
+          >
+            {{ editingId ? 'Actualizar' : 'Guardar' }} parámetro
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            (click)="reset()"
+            [disabled]="loading"
+          >
+            Nuevo
+          </button>
+        </div>
+      </div>
+
+      <!--  Mensajes -->
+      <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+      <div
+        *ngIf="!error && !loading && editingId === null && model.nombre"
+        class="alert alert-success mt-3"
+      >
+        Parámetro listo para guardar.
+      </div>
+    </form>
+  </div>
+</div>
+
+<hr class="my-3" />
+
+<!-- =======================
+ Listado de parámetros
+======================= -->
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <h6 class="text-primary fw-semibold mb-3">📄 Lista de parámetros</h6>
+
+    <div *ngIf="loading" class="text-center text-muted">
+      <div
+        class="spinner-border spinner-border-sm me-2"
+        role="status"
+      ></div>
+      Cargando parámetros...
+    </div>
+
+    <div
+      *ngIf="!loading && parametros.length === 0"
+      class="alert alert-info mt-2"
+    >
+      No hay parámetros registrados para este tipo de examen.
+    </div>
+
+    <div
+      *ngIf="!loading && parametros.length > 0"
+      class="table-responsive mt-2"
+    >
+      <table
+        class="table table-sm table-modern table-striped align-middle shadow-sm"
+      >
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Unidad</th>
+            <th>Rango de referencia</th>
+            <th>Observaciones</th>
+            <th>Título</th>
+            <th>Orden</th>
+            <th style="width: 140px" class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of parametros" class="row-hover">
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.unidad }}</td>
+            <td>{{ p.rangoReferencia }}</td>
+            <td>{{ p.observaciones }}</td>
+            <td>
+              <span
+                class="badge rounded-pill text-light"
+                [ngClass]="p.esTitulo ? 'bg-success' : 'bg-secondary'"
+              >
+                {{ p.esTitulo ? 'Sí' : 'No' }}
+              </span>
+            </td>
+            <td>{{ p.orden || '-' }}</td>
+            <td class="text-center">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary me-1"
+                (click)="edit(p)"
+                title="Editar"
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                (click)="remove(p)"
+                title="Eliminar"
+              >
+                🗑️
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

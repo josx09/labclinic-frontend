@@ -1,0 +1,97 @@
+<div class="container py-4">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header d-flex justify-content-between align-items-center bg-gradient text-white rounded-top-4"
+         style="background: linear-gradient(90deg, #007bff, #4facfe);">
+      <h4 class="mb-0 d-flex align-items-center gap-2">
+         Historial de examenes del paciente
+      </h4>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-outline-light btn-sm" (click)="volverAlPanel()">
+          ⬅️ Regresar
+        </button>
+        <button class="btn btn-outline-light btn-sm" (click)="imprimirHistorial()">
+          🖨️ Imprimir historial
+        </button>
+        <button class="btn btn-success btn-sm" (click)="imprimirResultados()">
+          📄 Imprimir resultados
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body bg-light rounded-bottom-4">
+      <!-- Si no hay historial -->
+      <div *ngIf="historial.length === 0" class="text-center py-5 text-muted">
+        <h5>⚕️ No hay registros de exámenes clínicos disponibles.</h5>
+        <p>Cuando se realicen tus primeros exámenes, aparecerán aquí.</p>
+      </div>
+
+      <!-- Acordeón -->
+      <div *ngIf="historial.length > 0" class="accordion">
+        <div
+          *ngFor="let grupo of historial; let i = index"
+          class="accordion-item mb-3 shadow-sm border-0 rounded-3 overflow-hidden"
+        >
+          <div
+            class="accordion-header bg-primary text-white p-3 d-flex justify-content-between align-items-center"
+            style="cursor: pointer; font-weight: 600;"
+            (click)="toggleGrupo(i)"
+          >
+            <div>
+              📅 {{ grupo.fecha | date:'EEEE, dd \'de\' MMMM \'de\' yyyy' : 'es' }}
+
+              — <span class="fw-normal">{{ grupo.examenes.length }} examen{{ grupo.examenes.length > 1 ? 'es' : '' }}</span>
+              — <span class="fw-normal">Total: Q{{ getTotal(grupo.examenes) | number:'1.2-2' }}</span>
+            </div>
+            <span
+              [class.rotate]="grupo.abierto"
+              style="transition: transform 0.3s; font-size: 1.2rem;"
+            >
+              ⬇️
+            </span>
+          </div>
+
+          <!-- Contenido expandible -->
+          <div
+            class="accordion-body bg-white"
+            *ngIf="grupo.abierto"
+          >
+            <table class="table table-hover table-bordered align-middle mb-3">
+              <thead class="table-primary">
+                <tr>
+                  <th>Examen</th>
+                  <th>Clínica</th>
+                  <th>Precio (Q)</th>
+                  <th>Resultado</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ex of grupo.examenes">
+                  <td>{{ ex.tipoExamen }}</td>
+                  <td>{{ ex.clinica }}</td>
+                  <td>Q{{ ex.precioAplicado | number: '1.2-2' }}</td>
+                  <td>{{ ex.resultado || 'Pendiente' }}</td>
+                  <td>
+                    <span
+                      class="badge px-3 py-2"
+                      [ngClass]="ex.estado === 1 ? 'bg-success' : 'bg-secondary'"
+                    >
+                      {{ ex.estado === 1 ? 'Activo' : 'Finalizado' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="text-end">
+              <button class="btn btn-outline-primary btn-sm" (click)="imprimirVisita(grupo)">
+                🧾 Imprimir esta visita
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

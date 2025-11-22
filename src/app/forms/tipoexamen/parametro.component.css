@@ -1,0 +1,108 @@
+/* =============================
+    CONTENEDOR GENERAL
+============================= */
+.parametros {
+  margin-top: 1.5rem;
+}
+
+/* =============================
+    FORMULARIO
+============================= */
+form {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+label.form-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+input.form-control {
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+input.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* =============================
+    BOTONES
+============================= */
+button.btn {
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+button.btn-primary:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+button.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* =============================
+    TABLA
+============================= */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+  text-align: left;
+}
+
+.table td,
+.table th {
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* =============================
+   MENSAJES
+============================= */
+.alert {
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+/* =============================
+    RESPONSIVE
+============================= */
+@media (max-width: 768px) {
+  form .row > div {
+    margin-bottom: 0.8rem;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  .table td,
+  .table th {
+    padding: 6px 8px;
+  }
+
+  button.btn {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+}

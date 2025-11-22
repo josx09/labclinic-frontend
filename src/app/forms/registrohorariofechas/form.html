@@ -1,0 +1,62 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Horarios por Fecha</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_registro</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_registro" name="id_registro">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_fecha</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_fecha" name="id_fecha" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">hora_inicio</label>
+  <input class="form-control" type="time" [(ngModel)]="model.hora_inicio" name="hora_inicio" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">hora_fin</label>
+  <input class="form-control" type="time" [(ngModel)]="model.hora_fin" name="hora_fin" required>
+</div>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+      <div *ngIf="error" class="text-danger mt-2">{{error}}</div>
+    </form>
+
+    <hr>
+
+    <!-- LISTADO -->
+    <div *ngIf="loading">Cargando...</div>
+    <div class="table-responsive" *ngIf="!loading">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>id_registro</th>
+            <th>id_fecha</th>
+            <th>hora_inicio</th>
+            <th>hora_fin</th>
+            <th style="width:120px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{r.id_registro}}</td>
+            <td>{{r.id_fecha}}</td>
+            <td>{{r.hora_inicio}}</td>
+            <td>{{r.hora_fin}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(r)" type="button">Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

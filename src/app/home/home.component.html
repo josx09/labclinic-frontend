@@ -1,0 +1,30 @@
+<header class="page-hero">
+  <div class="container-xl">
+    <h1 class="h3 mb-1">{{ user }}</h1>
+    <p class="lead m-0">Centro de Diagnóstico Completo · Panel principal</p>
+  </div>
+</header>
+
+<section class="container-xl py-4">
+  <div class="d-flex flex-wrap gap-3">
+    <!-- Tarjetas dinámicas según rol -->
+    <ng-container *ngFor="let t of tiles">
+      <div
+        class="tile card shadow-sm text-decoration-none flex-grow-1"
+        style="flex: 1 1 250px; max-width: 320px;"
+        *ngIf="canView(t)"
+      >
+        <div class="card-body d-flex gap-3 align-items-start">
+          <div class="tile-icon">
+            <i [ngClass]="['bi', t.icon, 'fs-2']"></i>
+          </div>
+          <div>
+            <h2 class="h5 mb-1">{{ t.title }}</h2>
+            <p class="text-secondary small mb-3">{{ t.desc }}</p>
+            <button class="btn btn-primary" (click)="go(t.cmd)">Abrir</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</section>

@@ -1,0 +1,113 @@
+<div class="modal fade" id="pagoParcialModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content shadow border-0">
+      
+      <!--  ENCABEZADO -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          💳 Pago parcial — {{ paciente?.nombre || paciente?.nombre_completo || 'Paciente' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!--  CUERPO DEL MODAL -->
+      <div class="modal-body">
+
+        <!-- Mensaje si no hay exámenes -->
+        <div *ngIf="!examenes?.length" class="alert alert-info text-center mb-0">
+          No hay exámenes pendientes de pago.
+        </div>
+
+        <!-- Tabla de exámenes -->
+        <table class="table table-sm table-striped align-middle mt-2" *ngIf="examenes?.length">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 40px;"></th>
+              <th>Examen</th>
+              <th class="text-end">Precio (Q)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of examenes">
+              <td class="text-center">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="e.selected"
+                  (ngModelChange)="toggleExamen(e)"
+                />
+              </td>
+              <td>
+                {{ e.nombre || e.tipoExamen?.nombre || e.tipo_examen?.nombre || '(Sin nombre)' }}
+              </td>
+              <td class="text-end">
+                {{ (e.precio_aplicado || e.monto || e.precio || 0) | number:'1.2-2' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!--  SUBTOTAL -->
+        <div
+          *ngIf="examenes?.length"
+          class="alert alert-success d-flex justify-content-between align-items-center mb-2 mt-3"
+        >
+          <div><strong>Total seleccionado:</strong></div>
+          <div class="fs-5 fw-bold">
+            Q{{ totalSeleccionado | number:'1.2-2' }}
+          </div>
+        </div>
+
+        <!--  MÉTODO DE PAGO Y NOTA -->
+        <div class="mt-3">
+          <label class="form-label fw-bold">Método de pago</label>
+          <select [(ngModel)]="metodoPago" class="form-select">
+            <option [value]="1">Efectivo</option>
+            <option [value]="2">Tarjeta</option>
+            <option [value]="3">Transferencia</option>
+          </select>
+
+          <label class="form-label fw-bold mt-3">Observaciones</label>
+          <textarea
+            [(ngModel)]="nota"
+            class="form-control"
+            rows="2"
+            placeholder="Nota del pago (opcional)..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!--  PIE DE MODAL -->
+      <div class="modal-footer bg-light border-top">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+
+        <!-- Botón Ver comprobante -->
+        <button
+          *ngIf="ultimoPagoId"
+          class="btn btn-outline-primary"
+          type="button"
+          (click)="verComprobante()"
+        >
+          🧾 Ver comprobante
+        </button>
+
+        <!-- Botón Confirmar -->
+        <button
+          class="btn btn-success"
+          type="button"
+          (click)="confirmarPagoParcial()"
+          [disabled]="cargando || totalSeleccionado === 0"
+        >
+          <ng-container *ngIf="!cargando; else cargandoTpl">
+            💾 Confirmar pago
+          </ng-container>
+          <ng-template #cargandoTpl>
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            Procesando...
+          </ng-template>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,382 @@
+<div class="container mt-4">
+  <div class="card shadow border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">👤 Gestión de Personas</h4>
+      <span class="badge bg-light text-dark px-3 py-2">
+        Total: {{ personasFiltradas.length }}
+      </span>
+    </div>
+
+    <div class="card-body">
+      <!--  Formulario -->
+      <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">
+        Registrar / Editar Persona
+      </h5>
+
+      <div class="row g-3">
+        <!-- Datos personales -->
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Nombre *</label>
+          <input
+            class="form-control"
+            [(ngModel)]="persona.nombre"
+            name="nombre"
+            required
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Apellido *</label>
+          <input
+            class="form-control"
+            [(ngModel)]="persona.apellido"
+            name="apellido"
+            required
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Sexo</label>
+          <select class="form-select" [(ngModel)]="persona.sexo" name="sexo">
+            <option value="">Seleccione</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label>Estado</label>
+          <select [(ngModel)]="persona.estado" name="estado" class="form-control">
+            <option [ngValue]="1">Activo</option>
+            <option [ngValue]="0">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Tipo de Cliente</label>
+          <select class="form-select" [(ngModel)]="persona.tipoCliente" name="tipoCliente">
+            <option [ngValue]="0">Normal</option>
+            <option [ngValue]="1">Referido</option>
+          </select>
+        </div>
+  <!--  Buscador de usuario cliente -->
+<div class="col-md-6 mt-3 position-relative">
+  <label class="form-label fw-semibold">Usuario Cliente</label>
+  <div class="input-group">
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="buscarUsuario"
+      (input)="buscarUsuariosCliente()"
+      [readonly]="!!usuarioSeleccionado"
+      placeholder="Buscar usuario cliente..."
+    />
+    <button
+      *ngIf="usuarioSeleccionado"
+      class="btn btn-outline-danger"
+      type="button"
+      (click)="limpiarUsuario()"
+      title="Quitar selección"
+    >
+      ✖
+    </button>
+  </div>
+
+  <!--  Lista de resultados -->
+  <ul
+    *ngIf="usuariosFiltrados.length > 0"
+    class="list-group position-absolute w-100 mt-1 shadow-sm"
+    style="z-index: 2000; max-height: 250px; overflow-y: auto;"
+  >
+    <li
+      *ngFor="let u of usuariosFiltrados; trackBy: trackById"
+      class="list-group-item list-group-item-action"
+      style="cursor: pointer;"
+      (click)="seleccionarUsuario(u)"
+    >
+      {{ u.username }} — {{ u.firstname }} {{ u.lastname }}
+    </li>
+  </ul>
+
+  <div *ngIf="buscandoUsuario" class="small text-muted mt-1">
+    Buscando usuarios...
+  </div>
+</div>
+
+
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Teléfono</label>
+          <input
+            class="form-control"
+            [(ngModel)]="persona.telefono"
+            name="telefono"
+            maxlength="15"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Correo</label>
+          <input
+            type="email"
+            class="form-control"
+            [(ngModel)]="persona.correo"
+            name="correo"
+            [ngClass]="{
+              'is-invalid': persona.correo && !esCorreoValido(persona.correo)
+            }"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">DPI</label>
+          <input
+            class="form-control"
+            maxlength="13"
+            [(ngModel)]="persona.dpi"
+            name="dpi"
+            [ngClass]="{
+              'is-invalid': persona.dpi && !esDpiValido(persona.dpi)
+            }"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Fecha de nacimiento</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="persona.fechaNacimiento"
+            name="fechaNacimiento"
+            (change)="calcularEdad()"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Edad</label>
+          <input class="form-control bg-light" [value]="getEdadTexto()" readonly />
+        </div>
+
+        <div class="col-md-8">
+          <label class="form-label fw-semibold">Observaciones</label>
+          <textarea
+            class="form-control"
+            [(ngModel)]="persona.observaciones"
+            name="observaciones"
+            rows="2"
+          ></textarea>
+        </div>
+
+        <!-- Dirección -->
+        <ng-container *ngIf="persona.direccion">
+          <div class="col-12 mt-4">
+            <h6 class="fw-bold border-bottom pb-2 text-secondary">📍 Dirección</h6>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Departamento</label>
+            <select
+              class="form-select"
+              [(ngModel)]="depSel"
+              name="departamento"
+              (change)="onDepartamentoChange()"
+            >
+              <option [ngValue]="null">Seleccione...</option>
+              <option
+                *ngFor="let d of departamentos; trackBy: trackById"
+                [ngValue]="d.id"
+              >
+                {{ d.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Municipio</label>
+            <select
+              class="form-select"
+              [(ngModel)]="persona.direccion.idMunicipio"
+              name="municipio"
+            >
+              <option [ngValue]="null">Seleccione...</option>
+              <option
+                *ngFor="let m of municipios; trackBy: trackById"
+                [ngValue]="m.id"
+              >
+                {{ m.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Calle</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="persona.direccion.calle"
+              name="calle"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Número</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="persona.direccion.numero"
+              name="numero"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Zona</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="persona.direccion.zona"
+              name="zona"
+            />
+          </div>
+
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">Referencia</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="persona.direccion.referencia"
+              name="referencia"
+            />
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Botón Guardar -->
+      <div class="text-end mt-4">
+        <button
+          class="btn btn-success px-4"
+          (click)="guardarPersona()"
+          [disabled]="cargando"
+        >
+          💾 {{ cargando ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!--  Buscador y filtro -->
+  <div class="card mt-4 shadow-sm border-0">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+      <div class="input-group w-50 mb-2 mb-md-0">
+        <span class="input-group-text bg-primary text-white">🔍</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar por nombre, correo o DPI..."
+          [(ngModel)]="buscador"
+          (input)="aplicarFiltros()"
+          name="buscador"
+        />
+      </div>
+
+      <div>
+        <label class="me-2 fw-semibold">Estado:</label>
+        <select
+          class="form-select d-inline w-auto"
+          [(ngModel)]="filtroEstado"
+          (change)="aplicarFiltros()"
+          name="filtroEstado"
+        >
+          <option value="todos">Todos</option>
+          <option value="activos">Activos</option>
+          <option value="inactivos">Inactivos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!--  Tabla -->
+  <div class="table-responsive mt-3 shadow-sm border rounded">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-primary">
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Edad</th>
+          <th>DPI</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of personasPaginaActual; trackBy: trackById">
+          <td>{{ p.nombre }} {{ p.apellido }}</td>
+          <td>{{ p.correo || '—' }}</td>
+          <td>{{ p.telefono || '—' }}</td>
+          <td>{{ obtenerEdad(p.fechaNacimiento) }}</td>
+          <td>{{ p.dpi || '—' }}</td>
+          <td>{{ p.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="p.estado === 1 ? 'bg-success' : 'bg-secondary'"
+            >
+              {{ p.estado === 1 ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button
+              class="btn btn-sm btn-outline-primary me-1"
+              (click)="editarPersona(p)"
+              title="Editar"
+            >
+              ✏️
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="eliminarPersona(p.id!)"
+              title="Eliminar"
+            >
+              🗑️
+            </button>
+
+            <button class="btn btn-outline-primary btn-sm" (click)="verHistorial(p.id)">
+              🧾 Ver historial
+            </button>
+
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!--  Paginación -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <small class="text-muted">
+      Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }} –
+      {{ maximoPaginado }} de {{ personasFiltradas.length }} registros
+    </small>
+
+    <div class="btn-group">
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        (click)="cambiarPagina(-1)"
+        [disabled]="paginaActual === 1"
+      >
+        ⬅ Anterior
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" disabled>
+        Página {{ paginaActual }} / {{ totalPaginas }}
+      </button>
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        (click)="cambiarPagina(1)"
+        [disabled]="paginaActual === totalPaginas"
+      >
+        Siguiente ➡
+      </button>
+    </div>
+  </div>
+</div>

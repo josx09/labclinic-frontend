@@ -1,0 +1,176 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Citas</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+        <!-- Paciente -->
+        <div class="col-md-6 mb-2">
+          <label class="form-label">Paciente</label>
+
+          <!--  Si es cliente: solo muestra su nombre -->
+          <input
+            *ngIf="isCliente"
+            type="text"
+            class="form-control"
+            [value]="nombreCliente"
+            readonly
+          />
+
+          <!-- Si NO es cliente: lista de pacientes -->
+          <select
+            *ngIf="!isCliente"
+            [(ngModel)]="model.id_paciente"
+            name="id_paciente"
+            class="form-control"
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let p of pacientes" [ngValue]="p.id_persona">
+              {{ p.nombre }} {{ p.apellido }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Médico -->
+        <div class="col-md-6 mb-2">
+          <label class="form-label">Médico</label>
+          <select
+            class="form-select"
+            [(ngModel)]="model.id_medico"
+            name="id_medico"
+          >
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let m of medicos" [ngValue]="m.id">
+              {{ m.firstname || m.nombre }} {{ m.lastname || m.apellido }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Fecha -->
+        <div class="col-md-6 mb-2 mt-2">
+          <label class="form-label">Fecha</label>
+          <input
+            type="date"
+            [(ngModel)]="model.fecha"
+            name="fecha"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- Estado -->
+        <div class="col-md-6 mb-2 mt-2" *ngIf="!isCliente">
+          <label class="form-label">Estado</label>
+          <select
+            class="form-select"
+            [(ngModel)]="model.estado_cita"
+            name="estado_cita"
+            required
+          >
+            <option [ngValue]="1">Activa</option>
+            <option [ngValue]="0">Cancelada</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button class="btn btn-primary me-2" type="submit">
+          {{ editingId ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+
+      <!-- Mensajes -->
+      <div *ngIf="error" class="alert alert-danger mt-2 p-2">{{ error }}</div>
+      <div *ngIf="successMessage" class="alert alert-success mt-2 p-2">
+        {{ successMessage }}
+      </div>
+    </form>
+
+    <hr />
+
+    <!-- LISTADO -->
+    <div *ngIf="loading">Cargando...</div>
+    <div class="table-responsive" *ngIf="!loading && items.length > 0">
+      <table class="table table-sm table-striped align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th style="width:150px" *ngIf="!isCliente">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{ r.id ?? r.id_cita }}</td>
+            <td>{{ r.PacienteNombre || r.paciente_nombre }}</td>
+            <td>{{ r.MedicoNombre   || r.medico_nombre }}</td>
+            <td>{{ r.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span
+                class="badge"
+                [class.bg-success]="r.estado_cita == 1 || r.estadoCita == 1"
+                [class.bg-secondary]="r.estado_cita == 0 || r.estadoCita == 0"
+              >
+                {{ (r.estado_cita == 1 || r.estadoCita == 1) ? 'Activa' : 'Cancelada' }}
+              </span>
+            </td>
+            <td *ngIf="!isCliente">
+              <button
+                class="btn btn-sm btn-outline-primary me-1"
+                type="button"
+                (click)="edit(r)"
+              >
+                Editar
+              </button>
+
+              <button
+                class="btn btn-sm btn-outline-danger"
+                type="button"
+                (click)="confirmRemove(r.id_cita || r.id)"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="!loading && items.length === 0" class="text-muted">
+      No hay citas registradas.
+    </div>
+
+    <!--  Modal de confirmación -->
+    <div
+      class="modal fade show"
+      tabindex="-1"
+      [ngStyle]="{
+        display: showDeleteModal ? 'block' : 'none',
+        'background-color': 'rgba(0,0,0,0.5)'
+      }"
+      *ngIf="showDeleteModal"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-danger">Confirmar eliminación</h5>
+            <button type="button" class="btn-close" (click)="cancelRemove()"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Seguro que deseas eliminar esta cita?</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="cancelRemove()">Cancelar</button>
+            <button class="btn btn-danger" (click)="remove()">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

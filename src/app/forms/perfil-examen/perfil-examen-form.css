@@ -1,0 +1,207 @@
+/* =====================================================
+   PERFIL DE EXÁMENES - INTERFAZ Y TABLAS
+   ===================================================== */
+
+/* 🧩 Tarjeta principal */
+.card {
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease-in-out;
+  border: 1px solid #e5e7eb;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* 📋 Título principal */
+h4.text-primary {
+  font-weight: 700;
+  color: #1e40af;
+  letter-spacing: 0.3px;
+}
+
+/* 🧠 Inputs y etiquetas */
+.form-label {
+  font-weight: 600;
+  color: #374151;
+}
+.form-control,
+textarea.form-control {
+  border-radius: 6px;
+  border-color: #d1d5db;
+  font-size: 0.95rem;
+}
+.form-control:focus,
+textarea.form-control:focus {
+  border-color: #36c2d8;
+  box-shadow: 0 0 0 0.15rem rgba(54, 194, 216, 0.25);
+}
+
+/* 💾 Botones principales */
+.btn-primary {
+  background: linear-gradient(90deg, #36c2d8, #3641dd);
+  border: none;
+  transition: all 0.25s ease-in-out;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #24bfee, #365add);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: none;
+  transition: all 0.2s ease-in-out;
+}
+.btn-secondary:hover {
+  background-color: #d1d5db;
+}
+
+/* 💰 Bloque de total */
+.alert-info {
+  background-color: #e0f7f9;
+  color: #036672;
+  border: 1px solid #b2e1e7;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 10px 14px;
+}
+
+/* =====================================================
+   TABLA DE PERFILES
+   ===================================================== */
+.table {
+  font-size: 0.9rem;
+  border-collapse: collapse;
+}
+.table thead th {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+}
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+.table td,
+.table th {
+  vertical-align: middle;
+  padding: 0.55rem 0.75rem;
+}
+
+/* 🔘 Botones dentro de tabla */
+.btn-outline-primary {
+  border-color: #36c2d8;
+  color: #0369a1;
+  transition: all 0.2s ease-in-out;
+}
+.btn-outline-primary:hover {
+  background-color: #36c2d8;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  border-color: #ef4444;
+  color: #b91c1c;
+  transition: all 0.2s ease-in-out;
+}
+.btn-outline-danger:hover {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+/* =====================================================
+   DETALLES DE EXÁMENES DENTRO DEL PERFIL
+   ===================================================== */
+.bg-light {
+  background-color: #f9fafb !important;
+}
+
+.table-sm {
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+.table-sm th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 1px solid #e5e7eb;
+}
+.table-sm td {
+  font-size: 0.88rem;
+}
+.table-sm td button.btn-outline-danger {
+  border: none;
+  color: #dc2626;
+}
+.table-sm td button.btn-outline-danger:hover {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* =====================================================
+   CHECKBOX DE EXÁMENES
+   ===================================================== */
+.form-check {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  background-color: #fff;
+}
+.form-check:hover {
+  background-color: #f3f4f6;
+}
+.form-check-input {
+  cursor: pointer;
+  border-color: #cbd5e1;
+}
+.form-check-input:checked {
+  background-color: #36c2d8;
+  border-color: #36c2d8;
+}
+.form-check-label {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* =====================================================
+   ALERTAS Y MENSAJES
+   ===================================================== */
+.alert-success {
+  border-left: 5px solid #10b981;
+  font-weight: 500;
+  background-color: #ecfdf5;
+}
+.alert-danger {
+  border-left: 5px solid #ef4444;
+  font-weight: 500;
+  background-color: #fef2f2;
+}
+
+/* Estado de carga */
+.text-muted.my-3 .spinner-border {
+  color: #36c2d8;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.85rem;
+  }
+  .table th,
+  .table td {
+    padding: 0.4rem;
+  }
+  .form-check-label {
+    font-size: 0.9rem;
+  }
+  .alert-info {
+    font-size: 0.85rem;
+  }
+}

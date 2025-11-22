@@ -1,0 +1,56 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Roles</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_rol</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_rol" name="id_rol">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">nombre_rol</label>
+  <input class="form-control" type="text" [(ngModel)]="model.nombre_rol" name="nombre_rol" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">descripcion</label>
+  <input class="form-control" type="text" [(ngModel)]="model.descripcion" name="descripcion">
+</div>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+      <div *ngIf="error" class="text-danger mt-2">{{error}}</div>
+    </form>
+
+    <hr>
+
+    <!-- LISTADO -->
+    <div *ngIf="loading">Cargando...</div>
+    <div class="table-responsive" *ngIf="!loading">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>id_rol</th>
+            <th>nombre_rol</th>
+            <th>descripcion</th>
+            <th style="width:120px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{r.id_rol}}</td>
+            <td>{{r.nombre_rol}}</td>
+            <td>{{r.descripcion}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(r)" type="button">Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,30 @@
+<div class="container mt-4">
+  <h3 class="text-center text-primary mb-4">📜 Listado de Facturas</h3>
+
+  <table class="table table-hover shadow-sm align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#Factura</th>
+        <th>Paciente</th>
+        <th>Fecha</th>
+        <th class="text-end">Monto (Q)</th>
+        <th>Método</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let f of facturas">
+        <td>{{ f.idFactura }}</td>
+        <td>{{ f.paciente }}</td>
+        <td>{{ f.fechaFactura | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td class="text-end">{{ f.montoTotal | number:'1.2-2' }}</td>
+        <td>{{ f.metodoPago }}</td>
+        <td>
+          <button class="btn btn-outline-primary btn-sm" (click)="verComprobante(f)">
+            🧾 Ver comprobante
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

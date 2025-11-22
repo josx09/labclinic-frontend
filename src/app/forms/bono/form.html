@@ -1,0 +1,155 @@
+<div class="card mt-4 shadow-sm">
+  <!--  Cabecera con filtro -->
+  <div class="card-header bg-primary text-white">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+      <h5 class="mb-0">Gestión de Bonos a Médicos</h5>
+
+      <!--  Filtro por fechas -->
+      <div class="d-flex align-items-center mt-2 mt-sm-0">
+        <label class="me-2 fw-bold">Desde:</label>
+        <input type="date" class="form-control me-2" style="width: 160px;" [(ngModel)]="fechaInicio" name="fechaInicio" />
+        <label class="me-2 fw-bold">Hasta:</label>
+        <input type="date" class="form-control me-2" style="width: 160px;" [(ngModel)]="fechaFin" name="fechaFin" />
+        <button class="btn btn-light text-primary fw-bold" (click)="filtrarPorFechas()">
+          <i class="bi bi-search"></i> Filtrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="card-body">
+    <form (ngSubmit)="guardarBono()" autocomplete="off">
+      <!--  Médico -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">Médico</label>
+        <select class="form-select" [(ngModel)]="bono.idMedico" name="idMedico" required>
+          <option [ngValue]="null">Seleccione un médico</option>
+          <option *ngFor="let m of medicos" [ngValue]="m.id">{{ m.nombre }}</option>
+        </select>
+      </div>
+
+      <!--  Paciente -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">Paciente Referido</label>
+        <select class="form-select" [(ngModel)]="bono.idPersona" name="idPersona" required>
+          <option [ngValue]="null">Seleccione un paciente</option>
+          <option *ngFor="let p of personas" [ngValue]="p.id">{{ p.nombre }}</option>
+        </select>
+      </div>
+
+      <!--  Porcentaje -->
+      <div class="mb-3">
+        <label for="porcentaje" class="form-label fw-bold">Porcentaje de Bono (%)</label>
+        <input
+          type="number"
+          id="porcentaje"
+          class="form-control"
+          [(ngModel)]="bono.porcentaje"
+          name="porcentaje"
+          (change)="calcularMontoBono()"
+          min="0"
+          max="100"
+          required
+        />
+      </div>
+
+      <!--  Monto Calculado -->
+      <div class="mb-3">
+        <label for="montoBono" class="form-label fw-bold">Monto Calculado (Q)</label>
+        <input
+          type="number"
+          id="montoBono"
+          class="form-control"
+          [(ngModel)]="bono.montoBono"
+          name="montoBono"
+          readonly
+        />
+      </div>
+
+      <!--  Estado -->
+      <div class="mb-3">
+        <label for="estado" class="form-label fw-bold">Estado</label>
+        <select id="estado" class="form-select" [(ngModel)]="bono.estado" name="estado">
+          <option [ngValue]="1">Activo</option>
+          <option [ngValue]="0">Inactivo</option>
+        </select>
+      </div>
+
+      <!--  Botones -->
+      <div class="text-end">
+        <button type="submit" class="btn btn-success me-2">
+          <i class="bi bi-save"></i> Guardar
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!--  Tabla de bonos -->
+  <div class="card-footer bg-light">
+    <table class="table table-sm table-bordered align-middle mt-3">
+      <thead class="table-secondary text-center">
+        <tr>
+          <th>ID</th>
+          <th>Médico</th>
+          <th>Paciente</th>
+          <th>Porcentaje</th>
+          <th>Monto</th>
+          <th>Fecha Registro</th>
+          <th>Pagado</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of bonos" class="text-center">
+          <td>{{ b.idBono }}</td>
+          <td>{{ b.medicoNombre }}</td>
+          <td>{{ b.personaNombre }}</td>
+          <td>{{ b.porcentaje }}%</td>
+          <td>Q {{ b.montoBono | number: '1.2-2' }}</td>
+          <td>{{ b.fechaRegistro | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <span
+              class="badge"
+              [class.bg-success]="b.pagado"
+              [class.bg-warning]="!b.pagado"
+            >
+              {{ b.pagado ? 'Pagado' : 'Pendiente' }}
+            </span>
+          </td>
+          <td>
+            <span
+              [class.text-success]="b.estado === 1"
+              [class.text-danger]="b.estado === 0"
+            >
+              {{ b.estado === 1 ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary me-1" (click)="editarBono(b)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-danger me-1"
+              (click)="eliminarBono(b.idBono!)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+            <button
+              *ngIf="!b.pagado"
+              class="btn btn-sm btn-success"
+              (click)="marcarComoPagado(b)"
+            >
+              <i class="bi bi-cash-stack"></i> Pagar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

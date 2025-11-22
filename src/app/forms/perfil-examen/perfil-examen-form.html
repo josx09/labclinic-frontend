@@ -1,0 +1,236 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h4 class="text-primary mb-3">
+      {{ modoEdicion ? '✏️ Editar Perfil de Examen' : '🧩 Crear Perfil de Examen' }}
+    </h4>
+
+    <!--  FORMULARIO PRINCIPAL -->
+    <form (ngSubmit)="guardarPerfil()" autocomplete="off" novalidate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre del perfil</label>
+          <input
+            class="form-control"
+            [(ngModel)]="model.nombre"
+            name="nombre"
+            required
+            placeholder="Ej. Perfil Hematológico"
+          />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Precio paquete (Q)</label>
+          <input
+            class="form-control"
+            type="number"
+            step="0.01"
+            [(ngModel)]="model.precio_paquete"
+            name="precio_paquete"
+            placeholder="Ej. 150.00"
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Descripción</label>
+          <textarea
+            class="form-control"
+            rows="2"
+            [(ngModel)]="model.descripcion"
+            name="descripcion"
+            placeholder="Ej. Incluye pruebas básicas de sangre..."
+          ></textarea>
+        </div>
+
+        
+        <!--  BÚSQUEDA + LISTADO PAGINADO -->
+      
+        <div class="col-12 mt-3">
+          <h6>Selecciona los exámenes que conforman el perfil:</h6>
+
+          <!--  Barra de búsqueda -->
+          <div class="input-group mb-2 w-50">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar examen por nombre o descripción..."
+              [(ngModel)]="searchTerm"
+              name="searchTerm"
+              (keyup.enter)="buscar()"
+            />
+            <button class="btn btn-outline-primary" type="button" (click)="buscar()">
+              🔍 Buscar
+            </button>
+            <button class="btn btn-outline-secondary" type="button" (click)="limpiarBusqueda()">
+              ❌ Limpiar
+            </button>
+          </div>
+
+          <!--  Listado con scroll -->
+          <div
+            class="border rounded p-2 bg-light"
+            style="max-height: 400px; overflow-y: auto;"
+          >
+            <div class="row">
+              <div class="col-md-4 mb-2" *ngFor="let e of examenes">
+                <div class="form-check border rounded p-2 bg-white shadow-sm">
+                  <input
+                    class="form-check-input me-2"
+                    type="checkbox"
+                    [checked]="seleccionados.includes(e.id)"
+                    (change)="toggleExamen(e.id, $event.target.checked)"
+                    id="check-{{ e.id }}"
+                  />
+                  <label class="form-check-label" [for]="'check-' + e.id">
+                    <strong>{{ e.nombre }}</strong>
+                    <br />
+                    <small class="text-muted">{{ e.descripcion }}</small><br />
+                    <span class="text-success fw-semibold">Q{{ e.precio | number: '1.2-2' }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--  Paginación -->
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              Página {{ page }} de {{ totalPages }}
+              <span class="text-muted">({{ totalItems }} registros)</span>
+            </div>
+
+            <div>
+              <button
+                class="btn btn-outline-primary btn-sm me-1"
+                [disabled]="page === 1"
+                type="button"
+                (click)="changePage(page - 1)"
+              >
+                ⬅️ Anterior
+              </button>
+              <button
+                class="btn btn-outline-primary btn-sm"
+                [disabled]="page === totalPages"
+                type="button"
+                (click)="changePage(page + 1)"
+              >
+                Siguiente ➡️
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!--  Total calculado -->
+        <div class="col-12 mt-3">
+          <div class="alert alert-info mb-0">
+            💰 <strong>Total calculado:</strong>
+            Q{{ model.precio_total | number: '1.2-2' }}
+          </div>
+        </div>
+
+        <!--  BOTONES -->
+        <div class="col-12 mt-3 text-end">
+          <button class="btn btn-primary" type="submit" [disabled]="loading">
+            {{ modoEdicion ? '💾 Actualizar' : '💾 Guardar' }}
+          </button>
+          <button class="btn btn-secondary ms-2" type="button" (click)="reset()">🧹 Nuevo</button>
+        </div>
+      </div>
+    </form>
+
+    <!--  MENSAJES -->
+    <div *ngIf="success" class="alert alert-success mt-3">{{ success }}</div>
+    <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+    <div *ngIf="loading" class="text-center text-muted my-3">
+      <div class="spinner-border spinner-border-sm me-2"></div>
+      Cargando datos, por favor espera...
+    </div>
+
+    <hr class="my-4" />
+
+    <!--  LISTADO DE PERFILES -->
+    <h5 class="mb-2">📋 Perfiles registrados</h5>
+
+    <div *ngIf="!perfiles?.length && !loading" class="text-center text-muted py-3">
+      No hay perfiles registrados todavía.
+    </div>
+
+    <table *ngIf="perfiles?.length" class="table table-sm table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 50px;"></th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Total (Q)</th>
+          <th>Precio Paquete (Q)</th>
+          <th style="width: 160px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let p of perfiles">
+          <tr>
+            <td class="text-center align-middle">
+              <button
+                class="btn btn-sm btn-light"
+                (click)="p.showDetails = !p.showDetails"
+                title="Ver exámenes incluidos"
+              >
+                <i [ngClass]="p.showDetails ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              </button>
+            </td>
+            <td class="fw-semibold">{{ p.nombre }}</td>
+            <td>{{ p.descripcion || '-' }}</td>
+            <td>Q{{ (p.precioTotal ?? 0) | number: '1.2-2' }}</td>
+            <td>Q{{ (p.precioPaquete ?? 0) | number: '1.2-2' }}</td>
+            <td class="text-nowrap">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="editarPerfil(p)">
+                ✏️ Editar
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="eliminarPerfil(p)">
+                🗑️ Eliminar
+              </button>
+            </td>
+          </tr>
+
+          <!--  Detalle de exámenes del perfil -->
+          <tr *ngIf="p.showDetails">
+            <td colspan="6" class="bg-light">
+              <div *ngIf="p.examenes?.length; else noExamenes">
+                <table class="table table-sm table-striped mb-0 border">
+                  <thead class="table-secondary">
+                    <tr>
+                      <th>Examen</th>
+                      <th>Precio base (Q)</th>
+                      <th style="width: 90px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let e of p.examenes">
+                      <td>{{ e.Nombre ?? e.nombre }}</td>
+                      <td>Q{{ (e.Precio ?? e.precio ?? 0) | number: '1.2-2' }}</td>
+                      <td class="text-end">
+                        <button
+                          class="btn btn-sm btn-outline-danger"
+                          title="Quitar examen del perfil"
+                          (click)="eliminarExamenDePerfil(p, e)"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="fw-bold text-end table-light">
+                      <td>Total</td>
+                      <td colspan="2">Q{{ calcularSubtotal(p.examenes) | number: '1.2-2' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <ng-template #noExamenes>
+                <p class="text-muted mb-0">Sin exámenes asociados.</p>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

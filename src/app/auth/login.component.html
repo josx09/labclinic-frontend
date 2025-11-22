@@ -1,0 +1,88 @@
+<section class="h-100 gradient-form">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-xl-10">
+        <div class="card rounded-3 text-black">
+          <div class="row g-0">
+
+            <!-- Lado Izquierdo -->
+            <div class="col-lg-6">
+              <div class="card-body p-md-5 mx-md-4">
+
+                <!-- Logo -->
+                <div class="text-center mb-4">
+                  <img src="assets/img/logo_lab.png" style="width:185px;" alt="logo">
+                  <h4 class="mt-1 mb-5 pb-1">Centro de Diagnóstico Completo</h4>
+                </div>
+
+                <!-- Formulario -->
+                <form #f="ngForm" (ngSubmit)="login()">
+                  <p>Inicia Sesión con tu cuenta</p>
+
+                  <!-- Usuario -->
+                  <div class="form-outline mb-4">
+                    <input type="text"
+                      id="username"
+                      name="u"
+                      [(ngModel)]="u"
+                      required
+                      placeholder="Username"
+                      class="form-control" />
+                    <label class="form-label" for="username">Nombre</label>
+                  </div>
+
+                  <!-- Contraseña -->
+                  <div class="form-outline mb-4">
+                    <input type="password"
+                      id="password"
+                      name="p"
+                      [(ngModel)]="p"
+                      required
+                      placeholder="Password"
+                      class="form-control" />
+                    <label class="form-label" for="password">Controseña</label>
+                  </div>
+
+                  <!-- Botón y enlace -->
+                  <div class="text-center pt-1 mb-5 pb-1">
+                    <button class="btn-login mb-3" type="submit">
+                      Inicio de Sesión
+                    </button>
+
+                    
+                  </div>
+
+                  <!-- Crear cuenta -->
+                  
+                  <div class="d-flex align-items-center justify-content-center pb-4">
+                    <p class="text-center mt-4 mb-0">
+                      No tienes cuenta?
+                      <a routerLink="/register" class="btn btn-outline-danger ms-2">
+                        Crea Una
+                      </a>
+                    </p>
+                  </div>
+
+
+                </form>
+
+              </div>
+            </div>
+
+            <!-- Lado Derecho -->
+            <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+              <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                <h2 class="mb-4">TU MEJOR OPCION</h2>
+                <h3 class="meddlie mb-5">
+                  Cuidando de tu salud.
+                </h3>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

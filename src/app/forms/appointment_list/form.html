@@ -1,0 +1,75 @@
+<!-- ===== Agendamientos (tabla: appointment_list) ===== -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Agendamientos</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+<div class="col-md-6 mb-2">
+  <label class="form-label">id</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id" name="id">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">code</label>
+  <input class="form-control" type="text" [(ngModel)]="model.code" name="code" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">schedule</label>
+  <input class="form-control" type="datetime-local" [(ngModel)]="model.schedule" name="schedule" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">client_id</label>
+  <input class="form-control" type="number" [(ngModel)]="model.client_id" name="client_id" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">prescription_path</label>
+  <input class="form-control" type="text" [(ngModel)]="model.prescription_path" name="prescription_path">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">status</label>
+  <input class="form-control" type="number" [(ngModel)]="model.status" name="status" required>
+</div>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+      <div *ngIf="error" class="text-danger mt-2">{{error}}</div>
+    </form>
+
+    <hr>
+
+    <!-- LISTADO -->
+    <div *ngIf="loading">Cargando...</div>
+    <div class="table-responsive" *ngIf="!loading">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>code</th>
+            <th>schedule</th>
+            <th>client_id</th>
+            <th>prescription_path</th>
+            <th>status</th>
+            <th style="width:120px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{r.id}}</td>
+            <td>{{r.code}}</td>
+            <td>{{r.schedule}}</td>
+            <td>{{r.client_id}}</td>
+            <td>{{r.prescription_path}}</td>
+            <td>{{r.status}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(r)" type="button">Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

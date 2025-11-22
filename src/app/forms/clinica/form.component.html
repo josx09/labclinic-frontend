@@ -1,0 +1,91 @@
+<div class="container mt-4">
+  <h2 class="mb-3">🏥 Gestión de Clínicas</h2>
+
+  <form (ngSubmit)="guardarClinica()" class="card p-3 shadow-sm">
+    <div class="row g-2">
+      <div class="col-md-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" [(ngModel)]="nuevaClinica.nombre" name="nombre" required />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Teléfono</label>
+        <input type="text" class="form-control" [(ngModel)]="nuevaClinica.telefono" name="telefono" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Contacto</label>
+        <input type="text" class="form-control" [(ngModel)]="nuevaClinica.contacto" name="contacto" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Dirección</label>
+        <input type="text" class="form-control" [(ngModel)]="nuevaClinica.direccion" name="direccion" />
+      </div>
+      <div class="col-md-4">
+        <label for="estado" class="form-label">Estado</label>
+        <select
+          id="estado"
+          [(ngModel)]="nuevaClinica.estado"
+          name="estado"
+          class="form-select"
+        >
+          <option [ngValue]="true">Activo</option>
+          <option [ngValue]="false">Inactivo</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="mt-3 text-end">
+      <button type="submit" class="btn btn-primary me-2">
+        {{ modoEdicion ? 'Actualizar' : 'Registrar' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="resetForm()">Limpiar</button>
+    </div>
+  </form>
+
+  <hr />
+
+  <h4 class="mt-4">📋 Lista de Clínicas</h4>
+  <table class="table table-bordered table-hover align-middle mt-2">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Teléfono</th>
+        <th>Contacto</th>
+        <th>Dirección</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of clinicas">
+        <td>{{ c.id }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.telefono || '-' }}</td>
+        <td>{{ c.contacto || '-' }}</td>
+        <td>{{ c.direccion || '-' }}</td>
+        <td>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-success': c.estado,
+              'bg-danger': !c.estado
+            }"
+          >
+            {{ c.estado ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-warning me-1" (click)="editarClinica(c)">✏️</button>
+          <button
+            class="btn btn-outline-danger btn-sm"
+            (click)="eliminarClinica(c)"
+            title="Eliminar permanentemente"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

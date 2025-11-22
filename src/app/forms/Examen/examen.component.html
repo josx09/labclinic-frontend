@@ -1,0 +1,745 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4 text-primary fw-bold">
+    🧪 Gestión de Exámenes por Paciente
+  </h2>
+  <!--  Indicador de carga por cambio de sucursal -->
+<div *ngIf="cargandoSucursal" class="alert alert-info text-center py-2 small" style="font-size:14px;" role="status">
+  <i class="bi bi-arrow-repeat spin me-1"></i>
+  Actualizando datos de la sucursal...
+</div>
+
+
+
+  <!--  Pestañas -->
+  <ul class="nav nav-pills justify-content-center mb-3">
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="filtroEstado === 'activos'"
+        (click)="cambiarFiltro('activos')"
+      >
+        🟢 Activos
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="filtroEstado === 'inactivos'"
+        (click)="cambiarFiltro('inactivos')"
+      >
+        ⚫ Inactivos
+      </button>
+    </li>
+  </ul>
+
+  <!--  Tabla de personas -->
+  <div class="table-responsive">
+
+    <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded shadow-sm">
+  <div class="input-group" style="max-width: 400px;">
+    <span class="input-group-text bg-primary text-white">
+      <i class="bi bi-search"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Buscar por nombre, correo o DPI..."
+      [(ngModel)]="searchTerm"
+      (input)="filtrarPersonas()"
+    />
+  </div>
+
+  <div>
+    <label class="me-2 fw-semibold">Estado:</label>
+    <select class="form-select d-inline-block w-auto" [(ngModel)]="filtroEstado" (change)="cambiarFiltro(filtroEstado)">
+      <option value="activos">Activos</option>
+      <option value="inactivos">Inactivos</option>
+    </select>
+  </div>
+</div>
+
+
+
+    <table class="table table-hover align-middle border rounded-3 shadow-sm">
+      <thead class="table-light">
+        <tr>
+          <th>Paciente</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Estado</th>
+          <th>Fecha registro</th>
+          <th class="text-center">Resumen</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngIf="personasFiltradas.length === 0">
+  <td colspan="8" class="text-center text-muted py-4">
+    👨‍⚕️ No hay pacientes referidos registrados.
+  </td>
+</tr>
+
+        <tr *ngFor="let p of personasFiltradas" class="align-middle">
+
+          <td><b>{{ p.nombre }} {{ p.apellido }}</b></td>
+          <td>{{ p.correo || '—' }}</td>
+          <td>{{ p.telefono || '—' }}</td>
+          <td>
+            <span class="badge" [ngClass]="p.estado === 1 ? 'bg-success' : 'bg-secondary'">
+              {{ p.estado === 1 ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>{{ p.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}</td>
+
+          <!-- Resumen -->
+          <td class="text-center">
+            <div *ngIf="examenesPorPersona[p.id]?.length">
+              <span
+                class="badge bg-success-subtle text-dark border me-1"
+                *ngIf="obtenerTotalPendiente(p.id) > 0"
+              >
+                💵 Q{{ obtenerTotalPendiente(p.id) | number:'1.2-2' }}
+              </span>
+              <span
+                class="badge bg-warning-subtle text-dark border me-1"
+                *ngIf="contarExamenesSinPago(p.id) > 0"
+              >
+                🧾 {{ contarExamenesSinPago(p.id) }} sin pago
+              </span>
+              <span class="badge bg-info-subtle text-dark border">
+                🔬 {{ examenesPorPersona[p.id]?.length || 0 }} exámenes
+              </span>
+            </div>
+            <div *ngIf="!examenesPorPersona[p.id]">
+              <small class="text-muted">—</small>
+            </div>
+          </td>
+
+          <!--  Acciones -->
+          <td class="text-center">
+            <div class="btn-group">
+              <!-- Siempre visible -->
+              <button
+                class="btn btn-sm btn-outline-primary"
+                (click)="verExamenes(p)"
+                [disabled]="p.estado === 0"
+              >
+                📋 Ver
+              </button>
+
+              <!-- Solo visibles si NO es médico -->
+              <ng-container *ngIf="!esMedico">
+                <button
+                  *ngIf="p.estado === 1"
+                  class="btn btn-sm btn-outline-warning"
+                  (click)="desactivarPersona(p)"
+                  title="Desactivar"
+                >
+                  🚫
+                </button>
+                <button
+                  *ngIf="p.estado === 0"
+                  class="btn btn-sm btn-outline-success"
+                  (click)="reactivarPersona(p)"
+                  title="Reactivar"
+                >
+                  🔄
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="eliminarPersona(p)"
+                  title="Eliminar"
+                >
+                  💣
+                </button>
+              </ng-container>
+            </div>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- EXÁMENES DEL PACIENTE SELECCIONADO -->
+  
+  <div
+    *ngIf="selectedPersona"
+    class="mt-4 p-4 border rounded-3 bg-light shadow-sm animate__animated animate__fadeIn"
+  >
+    <h5 class="mb-4 fw-semibold text-secondary">
+      🧾 Exámenes de
+      <span class="text-dark">
+        {{ selectedPersona.nombre }} {{ selectedPersona.apellido }}
+      </span>
+    </h5>
+
+    <!-- ==================== GESTIÓN DE GRUPOS / VISITAS ==================== -->
+    <div class="mb-3 p-3 border rounded-3 bg-white shadow-sm">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <!-- 🔹 Grupo actual -->
+        <div>
+          <h6 class="mb-1 text-secondary fw-semibold">
+            🧪 Grupo actual:
+            <span *ngIf="ultimoGrupo; else sinGrupo" class="badge bg-primary text-white">
+              {{ ultimoGrupo }}
+            </span>
+            <ng-template #sinGrupo>
+              <span class="badge bg-secondary">Sin grupo activo</span>
+            </ng-template>
+          </h6>
+
+          <small *ngIf="gruposPrevios?.length" class="text-muted">
+            Grupos previos: {{ gruposPrevios.length }}
+          </small>
+        </div>
+
+        <!-- 🔹 Grupos anteriores --><!--
+<div *ngIf="gruposDelPacienteActual?.length" class="mt-3">
+  <h6 class="fw-semibold text-secondary mb-2">🗂️ Grupos anteriores</h6>
+  <ul class="list-group small">
+    <li *ngFor="let g of gruposDelPacienteActual" class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <b>{{ g.id }}</b><br>
+        <small class="text-muted">{{ g.fecha | date:'dd/MM/yyyy HH:mm' }}</small>
+      </div>
+      <span class="badge bg-primary">
+        {{ g.cantidad }} exámenes — Q{{ g.total | number:'1.2-2' }}
+      </span>
+    </li>
+  </ul>
+</div>
+-->
+
+
+        <!--  Botones -->
+        <!--  Solo visible para administradores / laboratoristas -->
+<div class="d-flex flex-wrap gap-2" *ngIf="!esMedico">
+  <button class="btn btn-outline-primary btn-sm" (click)="crearGrupoNuevo()">
+    🆕 Nueva visita / grupo
+  </button>
+
+  <div *ngIf="gruposPrevios?.length" class="position-relative d-inline-block">
+    <button
+      class="btn btn-outline-info btn-sm"
+      type="button"
+      (click)="mostrarGrupos = !mostrarGrupos"
+    >
+      🔄 Reusar grupo anterior
+    </button>
+
+    <ul
+      *ngIf="mostrarGrupos"
+      class="list-group position-absolute bg-white shadow border rounded mt-1"
+      style="z-index: 10; width: 300px; max-height: 250px; overflow-y: auto;"
+    >
+      <li
+        *ngFor="let g of gruposPrevios"
+        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
+        (click)="onReusarGrupoClick(g)"
+      >
+        <div class="text-start">
+          <div class="fw-semibold text-dark" style="font-size: 0.95rem;">
+            {{ g.fecha | date:'dd/MM/yyyy, HH:mm' }}
+          </div>
+          <div class="text-muted small">
+            ID: {{ g.grupo | slice:0:8 }}
+          </div>
+        </div>
+        <span class="badge bg-primary text-white rounded-pill px-3 py-2">
+          Q{{ g.totalPendiente > 0 ? g.totalPendiente : g.total | number:'1.0-0' }}
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <button
+    *ngIf="ultimoGrupo"
+    class="btn btn-outline-danger btn-sm"
+    (click)="limpiarGrupoActual()"
+  >
+    ❌ Limpiar grupo actual
+  </button>
+
+  <button
+    class="btn btn-outline-secondary btn-sm"
+    (click)="toggleAutoAgrupar()"
+    [ngClass]="{ 'active': autoAgruparActivo }"
+  >
+    {{ autoAgruparActivo ? '🟩 Auto agrupar: ON' : '⬜ Auto agrupar: OFF' }}
+  </button>
+</div>
+
+      </div>
+
+      
+
+      <div class="mt-2 small text-muted">
+        <i class="bi bi-info-circle"></i>
+        Los exámenes agregados se agruparán en la visita actual.
+        Crea un nuevo grupo para registrar una nueva visita del paciente.
+      </div>
+    </div>
+ 
+
+    <!-- ==================== FORMULARIO NUEVO EXAMEN / PERFIL ==================== -->
+<!--  Solo visible para roles administrativos -->
+<div *ngIf="!esMedico" class="row g-3 align-items-end mb-3 position-relative">
+
+  <!--  Tipo de examen -->
+  <div class="col-md-3 position-relative">
+    <label class="form-label fw-semibold">Tipo de examen</label>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Escriba para buscar examen..."
+      [(ngModel)]="busquedaExamen"
+      name="busquedaExamen"
+      (input)="buscarExamen()"
+      autocomplete="off"
+    />
+
+    <!-- Lista desplegable -->
+    <div
+      *ngIf="resultadosExamenes.length > 0"
+      class="list-group position-absolute w-100 shadow-sm bg-white"
+      style="z-index: 10; max-height: 220px; overflow-y: auto;"
+    >
+      <button
+        type="button"
+        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        *ngFor="let e of resultadosExamenes"
+        (click)="seleccionarExamen(e)"
+      >
+        <div>
+          <b>{{ e.nombre }}</b><br />
+          <small class="text-muted">{{ e.categoria || 'Sin categoría' }}</small>
+        </div>
+        <span class="badge bg-primary-subtle text-dark border">
+          Q{{ e.precio || 0 | number: '1.2-2' }}
+        </span>
+      </button>
+    </div>
+
+    <div
+      *ngIf="busquedaExamen && resultadosExamenes.length === 0"
+      class="position-absolute w-100 bg-light text-muted small text-center py-1 border rounded-bottom"
+      style="z-index: 10;"
+    >
+      No se encontraron exámenes.
+    </div>
+  </div>
+
+  <!-- Perfil -->
+  <div class="col-md-2">
+    <label class="form-label fw-semibold">Perfil</label>
+    <select class="form-select" [(ngModel)]="nuevo.id_perfil_examen">
+      <option [ngValue]="0">-- Seleccione perfil --</option>
+      <option *ngFor="let p of perfiles" [value]="p.id">
+        {{ p.nombre }}
+      </option>
+    </select>
+  </div>
+
+  <!--  Clínica -->
+  <div class="col-md-2">
+    <label class="form-label fw-semibold">Clínica</label>
+    <select class="form-select" [(ngModel)]="nuevo.id_clinica">
+      <option [ngValue]="null">-- Sin clínica --</option>
+      <option *ngFor="let c of clinicas" [ngValue]="c.id">{{ c.nombre }}</option>
+    </select>
+  </div>
+
+  <!--  Usar precio de clínica -->
+  <div class="col-md-2 d-flex align-items-end">
+    <div class="form-check border rounded-3 ps-3 py-2 bg-white shadow-sm flex-grow-1">
+      <input
+        class="form-check-input me-2"
+        type="checkbox"
+        id="chkPrecio"
+        [(ngModel)]="nuevo.usar_precio_clinica"
+      />
+      <label class="form-check-label fw-semibold" for="chkPrecio">
+        💰 Usar precio de clínica
+      </label>
+    </div>
+  </div>
+  <!--  Médico referidor -->
+  <div class="col-md-3 position-relative">
+    <label class="form-label fw-semibold">👨‍⚕️ Médico referidor</label>
+    <div class="input-group position-relative" (click)="toggleListaMedicos($event)">
+  <span class="input-group-text"><i class="bi bi-person-search"></i></span>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Buscar médico..."
+    [(ngModel)]="busquedaReferidor"
+    (input)="buscarReferidor()"
+    autocomplete="off"
+    readonly
+  />
+  <button
+    *ngIf="selectedReferidor"
+    type="button"
+    class="btn btn-outline-secondary"
+    (click)="limpiarReferidor(); $event.stopPropagation();"
+    title="Quitar referidor"
+  >
+    ✖
+  </button>
+
+  <!-- Lista desplegable -->
+  <div
+    *ngIf="mostrarListaMedicos"
+    class="list-group position-absolute w-100 shadow bg-white border"
+    style="z-index: 30; max-height: 240px; overflow-y: auto; top: 100%;"
+  >
+    <button
+      type="button"
+      class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+      *ngFor="let m of resultadosReferidores"
+      (click)="seleccionarReferidor(m); $event.stopPropagation();"
+    >
+      <div>
+        <b>{{ m.nombre }} {{ m.apellido }}</b><br />
+        <small class="text-muted">{{ m.colegiado ?? m.especialidad ?? 'Médico' }}</small>
+      </div>
+      <span class="badge bg-primary-subtle text-dark border">
+        ID #{{ m.id ?? m.id_persona }}
+      </span>
+    </button>
+  </div>
+</div>
+
+
+    
+  </div>
+  <!--  Botón agregar -->
+  <div class="col-md-2">
+    <button
+      class="btn btn-success w-100 shadow-sm"
+      (click)="agregarExamen()"
+      [disabled]="selectedPersona?.estado === 0"
+    >
+      ➕ Agregar examen / perfil
+    </button>
+  </div>
+</div>
+
+
+    <div *ngIf="plantillaParametros.length && !nuevo.id_perfil_examen" class="alert alert-info py-2">
+      Este tipo de examen tiene <b>parámetros</b>. Se crearán automáticamente y
+      podrá ingresar cada resultado luego.
+    </div>
+
+    <!-- ==================== LISTADO DE EXÁMENES AGRUPADOS (COLAPSABLE) ==================== -->
+<div *ngFor="let g of gruposCache; trackBy: trackGrupo" class="grupo-card mb-3 shadow-sm rounded-3 border-start border-3 border-primary-subtle">
+
+  <!--  Cabecera del grupo -->
+  <div
+    class="bg-light p-3 rounded-top d-flex justify-content-between align-items-center grupo-header"
+    [class.bg-primary-subtle]="expandedGroups[g.grupo]"
+    (click)="toggleGrupo(g.grupo)"
+    style="cursor: pointer;"
+  >
+    <div>
+      <div class="fw-semibold text-dark">
+        🧪 {{ g.nombreGrupo || (g.grupo === 'Sin grupo' ? 'Sin grupo' : 'Visita sin nombre') }}
+      </div>
+      <small class="text-muted">{{ g.fecha | date: 'dd/MM/yyyy HH:mm' }}</small>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-info-subtle text-dark border">🔬 {{ g.cantidad }} exámenes</span>
+      <span class="badge bg-success-subtle text-dark border" *ngIf="g.totalPendiente > 0">
+        💵 Pendiente: Q{{ g.totalPendiente | number:'1.2-2' }}
+      </span>
+      <span class="badge bg-success text-white border" *ngIf="g.totalPendiente === 0">
+        ✅ Pagado
+      </span>
+      <span [ngClass]="expandedGroups[g.grupo] ? 'text-primary' : 'text-muted'">
+        {{ expandedGroups[g.grupo] ? '▲' : '▼' }}
+      </span>
+    </div>
+  </div>
+
+  <!--  Contenido del grupo -->
+  <div class="p-3 bg-white border-top" [hidden]="!expandedGroups[g.grupo] && !mostrarTodosGrupos">
+
+    <!-- LISTA DE EXÁMENES -->
+    <div
+      *ngFor="let e of g.examenes; trackBy: trackExamen"
+      class="card border-0 shadow-sm mb-3 rounded-3"
+    >
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <input type="checkbox" [(ngModel)]="e._selected" class="form-check-input" />
+            <div>
+              <h6 class="fw-semibold mb-0 text-dark">🧪 {{ e.tipoExamen?.nombre || 'Sin tipo' }}</h6>
+              <div *ngIf="e.precio && e.precio > 0" class="text-success small fw-semibold mt-1">
+                💰 Precio: Q{{ e.precio | number: '1.2-2' }}
+              </div>
+              <small class="text-muted d-block">
+                Registrado: {{ e.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}
+              </small>
+            </div>
+          </div>
+
+          <!-- Botones internos del examen -->
+          <div class="btn-group">
+            <button
+              class="btn btn-sm btn-outline-success"
+              (click)="imprimirResultado(e)"
+              *ngIf="esMedico"
+            >
+              🖨️
+            </button>
+
+            <ng-container *ngIf="!esMedico">
+              <button class="btn btn-sm btn-outline-secondary" (click)="toggleParametros(e)">
+                {{ e._showParametros ? 'Ocultar' : 'Ver' }} parámetros
+              </button>
+              <button *ngIf="!e.hasParametros" class="btn btn-sm btn-outline-info" (click)="cargarPlantillaSiNoTiene(e)">
+                📋 Plantilla
+              </button>
+              <button *ngIf="!e.hasParametros" class="btn btn-sm btn-outline-primary" (click)="editarExamen(e)">
+                💾 Guardar
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="eliminarExamen(e)">
+                🗑️
+              </button>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Resultado simple -->
+        <div *ngIf="!e.hasParametros" class="mt-3">
+          <label class="form-label small fw-semibold text-secondary">Resultado</label>
+          <input [(ngModel)]="e.resultado" class="form-control form-control-sm shadow-sm" placeholder="Resultado del examen" />
+        </div>
+
+        <!-- Parámetros -->
+        <div *ngIf="e._showParametros" class="mt-3">
+          <div *ngIf="!e._parametros?.length" class="text-muted">
+            No hay parámetros cargados para este examen.
+          </div>
+
+          <div *ngIf="e._parametros?.length" class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Parámetro</th>
+                  <th style="width: 160px">Unidad</th>
+                  <th style="width: 200px">Rango ref.</th>
+                  <th style="width: 220px">Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of e._parametros">
+                  <td>{{ p.nombre }}</td>
+                  <td>{{ p.unidad || '—' }}</td>
+                  <td>{{ p.rangoReferencia || '—' }}</td>
+                  <td>
+                    <input [(ngModel)]="p.resultado" class="form-control form-control-sm shadow-sm" placeholder="Valor" [ngClass]="getResultadoClass(p)" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="text-end mt-2">
+              <button class="btn btn-success btn-sm shadow-sm" (click)="guardarTodosParametros(e)">
+                💾 Guardar todos los parámetros
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔹 BOTONES DE ACCIÓN POR VISITA -->
+    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-3">
+      <div>
+        <i class="bi bi-cash-stack"></i>
+        <span *ngIf="g.totalPendiente > 0" class="text-warning fw-semibold">
+          💰 Total visita: <strong class="text-success">Q{{ g.totalPendiente | number:'1.2-2' }}</strong>
+        </span>
+
+        <span *ngIf="g.totalPendiente === 0" class="text-success fw-semibold">
+          ✅ Visita pagada — Q{{ g.total | number:'1.2-2' }}
+        </span>
+        <span class="text-muted ms-2 small">| Exámenes: {{ g.cantidad }}</span>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-outline-primary btn-sm" (click)="imprimirVisita(g)">
+          🖨️ Imprimir visita
+        </button>
+        <button class="btn btn-outline-info btn-sm" (click)="verGrupo(g.grupo)">
+          👁️ Ver detalle
+        </button>
+
+        <ng-container *ngIf="!esMedico">
+          <button
+            class="btn btn-outline-success btn-sm"
+            [disabled]="g.totalPendiente === 0"
+            (click)="pagarVisita(g)"
+          >
+            💵 Pagar visita
+          </button>
+          <button
+            class="btn btn-outline-warning btn-sm"
+            [disabled]="g.totalPendiente === 0"
+            (click)="pagoParcialVisita(g)"
+          >
+            💳 Pago parcial
+          </button>
+          <button class="btn btn-outline-info btn-sm" (click)="verHistorialPagos()">
+            🧾 Historial
+          </button>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- 🔹 BOTONES DE IMPRESIÓN DENTRO DE CADA VISITA -->
+    <div class="text-end mt-3">
+      <button
+        class="btn btn-outline-primary me-2"
+        (click)="imprimirSeleccionados()"
+        [disabled]="!tieneSeleccionados()"
+      >
+        🖨️ Imprimir seleccionados
+      </button>
+
+      <button
+        class="btn btn-outline-danger btn-sm"
+        (click)="imprimirTodosDelGrupo(g)"
+        [disabled]="!(g.examenes?.length > 0)"
+      >
+        📄 Imprimir todos
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+      <!-- Botones masivos -->
+      <div class="mt-3 text-end">
+        <button
+          class="btn btn-outline-primary me-2"
+          (click)="imprimirSeleccionados()"
+          [disabled]="!tieneSeleccionados()"
+        >
+          🖨️ Imprimir seleccionados
+        </button>
+
+        <button
+          class="btn btn-outline-danger"
+          (click)="imprimirTodos()"
+          [disabled]="!(examenesPorPersona[selectedPersona.id]?.length > 0)"
+        >
+          📄 Imprimir todos
+        </button>
+      </div>
+
+      <!-- ===================== PAGO DIRECTO DEL PACIENTE ===================== -->
+      <div
+  *ngIf="!esMedico && !gruposCache?.length"
+  class="mt-4 p-3 border rounded-3 bg-white shadow-sm"
+>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+          <div>
+            <h6 class="fw-semibold text-secondary mb-1">
+              💵 Total pendiente:
+              <span class="text-success fs-5">
+                Q{{ obtenerTotalPendiente(selectedPersona.id) | number:'1.2-2' }}
+              </span>
+            </h6>
+            <div class="small text-muted">
+              Exámenes sin pago: {{ contarExamenesSinPago(selectedPersona.id) }}
+            </div>
+          </div>
+
+          <div class="text-end">
+            <button
+              class="btn btn-outline-success me-2"
+              (click)="abrirPagoParcialDesdeExamenes()"
+              [disabled]="!tienePendientes(selectedPersona.id)"
+            >
+              💳 Pago parcial
+            </button>
+
+            <button
+              class="btn btn-success"
+              (click)="pagarTodoDesdeExamenes()"
+              [disabled]="!tienePendientes(selectedPersona.id)"
+            >
+              ✅ Pagar todo
+            </button>
+
+            <button class="btn btn-outline-primary me-2" (click)="verHistorialPagos()">
+              🧾 Ver historial
+            </button>
+          </div>
+        </div>
+      </div>
+
+    
+
+    <ng-template #noExamenes>
+      <div class="text-center text-muted py-3">
+        No hay exámenes registrados para este paciente.
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- ===================== MODAL DE PAGO PARCIAL (para todos los pacientes) ===================== -->
+  <app-pago-parcial
+    *ngIf="selectedPersona"
+    [paciente]="selectedPersona"
+    [examenes]="examenesPendientes">
+  </app-pago-parcial>
+
+  <!-- ===================== MODAL HISTORIAL DE PAGOS ===================== -->
+  <div class="modal fade" id="historialPagosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content shadow">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">
+            🧾 Historial de pagos — {{ selectedPersona?.nombre }} {{ selectedPersona?.apellido }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div *ngIf="!historialPagos.length" class="alert alert-info text-center mb-0">
+            No hay pagos registrados para este paciente.
+          </div>
+
+          <table *ngIf="historialPagos.length" class="table table-sm table-striped align-middle mt-2">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Método</th>
+                <th>Monto (Q)</th>
+                <th>Fecha de pago</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of historialPagos">
+                <td>{{ p.id }}</td>
+                <td>{{ p.metodo }}</td>
+                <td>{{ p.montoPagado | number:'1.2-2' }}</td>
+                <td>{{ p.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>

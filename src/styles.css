@@ -1,0 +1,246 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Ocupa toda la altura del viewport pero sin forzar flex aquí */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Footer visual: ya lo empujaremos desde el layout */
+.app-footer {
+  background: #929fba;
+  color: white;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+/* ===== tus estilos previos ===== */
+.gradient-custom-2 {
+  background: linear-gradient(120deg, #003079, #0046a1 60%, #005c7a);
+}
+
+
+@media (min-width: 768px) {
+  .gradient-form { height: 100vh !important; }
+}
+@media (min-width: 769px) {
+  
+
+}
+
+.bg-gradient-danger { background: linear-gradient(87deg,#f5365c,#f56036)!important; }
+.fill-default { fill: #172b4d; }
+.separator { position: relative; }
+.separator-bottom { bottom: 0; left: 0; right: 0; }
+.separator-skew svg { position: absolute; bottom: 0; width: 100%; height: 100px; }
+/* Personas: tabla tipo cards */
+.table-modern {
+  border-collapse: separate;
+  border-spacing: 0 10px;         /* separa filas como tarjetas */
+}
+
+.table-modern thead th {
+  border: none !important;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: .78rem;
+  letter-spacing: .02em;
+}
+
+.table-modern tbody tr {
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, .06);
+  border-radius: 12px;
+}
+
+.table-modern tbody tr > *:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.table-modern tbody tr > *:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Hover visible */
+.table-modern .row-hover:hover {
+  transform: translateY(-1px);
+  transition: transform .15s ease;
+  box-shadow: 0 10px 22px rgba(16, 24, 40, .10);
+}
+
+/* Avatar consistente */
+.table-modern .avatar {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+}
+
+/* Botón link más fino */
+.table-modern .btn.btn-link {
+  text-decoration: none;
+}
+.table-modern .btn.btn-link:hover {
+  text-decoration: underline;
+}
+
+/* Badges: aseguramos contraste si estás en BS4/5 */
+.badge.bg-success, .badge.bg-primary, .badge.bg-secondary, .badge.bg-warning {
+  padding: .45em .6em;
+  font-weight: 600;
+  font-size: .75rem;
+}
+
+/* =====================================================
+   EXÁMENES Y PARÁMETROS
+   ===================================================== */
+
+/* Corrige las tablas anidadas de parámetros */
+.table-sm td, .table-sm th {
+  vertical-align: middle !important;
+  padding: 0.4rem 0.5rem !important;
+}
+
+/* Mantén fondo blanco y bordes suaves dentro del bloque de parámetros */
+.table-sm {
+  background-color: #fff !important;
+  border-color: #dee2e6 !important;
+  border-radius: 8px;
+}
+
+/* Alineación y contraste */
+.table-sm thead th {
+  background-color: #f9fafb !important;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Input de resultados dentro de parámetros */
+.table-sm input.form-control-sm {
+  font-size: 0.85rem;
+  height: 28px;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Colores clínicos */
+.text-danger.fw-bold {
+  color: #b91c1c !important;
+  background-color: #ffe5e5 !important;
+}
+
+.text-success.fw-bold {
+  color: #065f46 !important;
+  background-color: #e7f9ee !important;
+}
+
+.text-primary.fw-bold {
+  color: #1e40af !important;
+  background-color: #e3f0ff !important;
+}
+.card {
+  border-radius: 10px;
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.card-body h6 {
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.table-sm td,
+.table-sm th {
+  vertical-align: middle !important;
+}
+
+.table-sm input.form-control-sm {
+  height: 28px;
+  font-size: 0.85rem;
+}
+
+.text-danger.fw-bold {
+  color: #b91c1c !important;
+  background-color: #ffe5e5 !important;
+}
+
+.text-success.fw-bold {
+  color: #065f46 !important;
+  background-color: #e7f9ee !important;
+}
+
+.text-primary.fw-bold {
+  color: #1e40af !important;
+  background-color: #e3f0ff !important;
+}
+/* =====================================================
+   TIPO DE EXAMEN - NUEVOS SELECTS (Categoría y Perfil)
+   ===================================================== */
+
+form .form-select {
+  border-radius: 6px;
+  border-color: #ced4da;
+  transition: all 0.2s ease-in-out;
+}
+
+form .form-select:focus {
+  border-color: #36c2d8;
+  box-shadow: 0 0 0 0.15rem rgba(54, 194, 216, 0.25);
+}
+
+form label.form-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.table thead th {
+  white-space: nowrap;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+/* ✨ Resaltado visual al agregar examen nuevo */
+.highlight-new {
+  animation: flash-green 1.5s ease-in-out;
+}
+
+@keyframes flash-green {
+  0% { background-color: rgba(0, 255, 100, 0.3); }
+  50% { background-color: rgba(0, 255, 100, 0.1); }
+  100% { background-color: transparent; }
+}
+/* 🔁 Animación del ícono de carga */
+.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Botón del login con el nuevo degradado */
+.btn-login {
+  background: linear-gradient(120deg, #0d6efd, #2f80ed);
+  color: white !important;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  width: 100%;
+  transition: 0.25s ease;
+}
+
+.btn-login:hover {
+  background: linear-gradient(120deg, #0b5ed7, #1a68db);
+  transform: translateY(-2px);
+}

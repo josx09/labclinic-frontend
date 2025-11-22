@@ -1,0 +1,127 @@
+<!-- Buscador -->
+<div class="row mb-3">
+  <div class="col-md-8 position-relative">
+    <label class="form-label">Buscar examen</label>
+    <input class="form-control"
+           type="text"
+           [(ngModel)]="searchTerm"
+           name="searchTerm"
+           (input)="buscarExamenes()"
+           placeholder="Escriba el nombre del examen..."
+           autocomplete="off">
+
+    <!-- Resultados desplegables -->
+    <ul *ngIf="resultadosBusqueda.length"
+        class="list-group position-absolute w-100 mt-1 shadow-sm"
+        style="z-index: 1000; max-height: 250px; overflow-y: auto;">
+      <li *ngFor="let e of resultadosBusqueda"
+          class="list-group-item list-group-item-action"
+          (click)="seleccionarExamen(e)">
+        {{ e.nombre }} — 
+        <span class="text-success fw-bold">Q{{ e.precio | number:'1.2-2' }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!--  botón corregido -->
+  <div class="col-md-4 d-flex align-items-end">
+    <button class="btn btn-secondary w-100" type="button" (click)="resetTodo()">
+      🧹 Limpiar búsqueda
+    </button>
+  </div>
+</div>
+
+
+<hr>
+<h5 class="mt-2">📋 Exámenes en cotización</h5>
+
+<div class="table-responsive mt-2">
+  <table class="table table-sm table-bordered align-middle">
+    <thead class="table-light">
+    <tr>
+      <th style="width:40px">#</th>
+      <th>Examen</th>
+      <th style="width:150px">Precio (Q)</th>
+      <th style="width:70px">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let e of cotizacionActual; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ e.nombre }}</td>
+      <td>
+        <input type="number" class="form-control form-control-sm text-end"
+               [(ngModel)]="e.precio" name="precio_{{i}}" step="0.01">
+      </td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-danger" type="button" (click)="eliminarDeCotizacion(e.id_examen)">🗑</button>
+      </td>
+    </tr>
+    <tr *ngIf="!cotizacionActual.length">
+      <td colspan="4" class="text-center text-muted py-3">Sin exámenes seleccionados</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <h5 class="mb-0">💰 Total: <span class="text-success">Q{{ total | number:'1.2-2' }}</span></h5>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-secondary" type="button" (click)="resetTodo()">Reiniciar</button>
+    <button class="btn btn-success" type="button" (click)="imprimirCotizacion()" [disabled]="!cotizacionActual.length">
+      🖨 Imprimir Cotización
+    </button>
+  </div>
+</div>
+
+<!-- =======================
+     MODAL SELECTOR DE PRECIO
+     ======================= -->
+<div class="modal fade show" tabindex="-1" style="display:block; background: rgba(0,0,0,.35)" *ngIf="pricePicker.open">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">💲 Seleccionar precio para {{ pricePicker.examen.nombre }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarPricePicker()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-2"><strong>Precio base:</strong> Q{{ pricePicker.examen.precioBase | number:'1.2-2' }}</div>
+
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <label class="mb-0">Filtrar clínica:</label>
+          <input class="form-control" style="max-width:320px" [(ngModel)]="pricePicker.filter" placeholder="Escriba nombre de clínica…">
+        </div>
+
+        <div *ngIf="pricePicker.loading">Cargando precios…</div>
+
+        <div class="table-responsive" *ngIf="!pricePicker.loading">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Clínica</th>
+                <th style="width:140px">Precio (Q)</th>
+                <th style="width:90px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of rowsFiltradas">
+                <td>{{ r.nombre }}</td>
+                <td>Q{{ r.precio | number:'1.2-2' }}</td>
+                <td><button class="btn btn-sm btn-outline-primary" (click)="usarPrecioClinica(r)">Usar</button></td>
+              </tr>
+              <tr *ngIf="rowsFiltradas.length === 0">
+                <td colspan="3" class="text-muted">No hay precios especiales para este examen o no coincide el filtro.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="usarPrecioBase()">Usar precio base</button>
+        <button class="btn btn-outline-secondary" (click)="cerrarPricePicker()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,324 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Insumos</h2>
+
+    <form (ngSubmit)="save()" autocomplete="off">
+      <div class="row">
+        <!-- ID automático -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">ID</label>
+          <input class="form-control" [(ngModel)]="model.id" name="id" readonly>
+        </div>
+
+        <!-- Categoría -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Categoría</label>
+          <select class="form-select" [(ngModel)]="model.idCategoria" name="idCategoria" required>
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let c of categorias" [ngValue]="c.id">{{ c.nombre }}</option>
+          </select>
+        </div>
+
+        <!-- Proveedor -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Proveedor</label>
+          <select class="form-select" [(ngModel)]="model.idProveedor" name="idProveedor">
+            <option [ngValue]="null">Seleccione...</option>
+            <option *ngFor="let p of proveedores" [ngValue]="p.id">{{ p.nombre }}</option>
+          </select>
+        </div>
+
+
+        <!-- Nombre insumo -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Nombre</label>
+          <input class="form-control" [(ngModel)]="model.nombre" name="nombre" required>
+        </div>
+
+        <!-- Stock -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Stock</label>
+          <input type="number" class="form-control" [(ngModel)]="model.stock" name="stock" required>
+        </div>
+
+        <!-- Stock mínimo -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Stock mínimo</label>
+          <input type="number" class="form-control" [(ngModel)]="model.stockMinimo" name="stockMinimo" required>
+        </div>
+
+        <!-- Precio -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Precio</label>
+          <input type="number" class="form-control" [(ngModel)]="model.precio" name="precio" required>
+        </div>
+
+        <!-- Estado -->
+        <div class="col-md-3 mb-2">
+          <label class="form-label">Estado</label>
+          <select class="form-select" [(ngModel)]="model.estado" name="estado" required>
+            <option [ngValue]="1">Activo</option>
+            <option [ngValue]="0">Inactivo</option>
+          </select>
+        </div>
+
+        <!-- Unidad medida -->
+        <div class="col-md-4 mb-2">
+          <label class="form-label">Unidad medida</label>
+          <input class="form-control" [(ngModel)]="model.unidadMedida" name="unidadMedida">
+        </div>
+
+        <!-- Almacenado -->
+        <div class="col-md-4 mb-2">
+          <label class="form-label">Almacenado</label>
+          <input class="form-control" [(ngModel)]="model.almacenado" name="almacenado">
+        </div>
+
+        <!-- Descripción -->
+        <div class="col-md-4 mb-2">
+          <label class="form-label">Descripción</label>
+          <input class="form-control" [(ngModel)]="model.descripcion" name="descripcion">
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit">
+          {{ editingId ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+      <div *ngIf="error" class="text-danger mt-2">{{ error }}</div>
+    </form>
+
+    <hr>
+
+    <!-- Tabla de insumos -->
+<div *ngIf="loading">Cargando…</div>
+<div class="table-responsive" *ngIf="!loading && items.length > 0">
+<!-- =============================== -->
+<!-- 🔹 Panel de estado de inventario -->
+<!-- =============================== -->
+<div class="alert alert-light border shadow-sm mb-3" *ngIf="items.length > 0">
+  <div class="d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+  <h6 class="fw-semibold text-primary">
+    <i class="bi bi-graph-up-arrow me-2"></i>Resumen del inventario
+  </h6>
+  <button class="btn btn-outline-info btn-sm" type="button" (click)="verUsosHoy()">
+    📊 Ver uso diario
+  </button>
+</div>
+
+      <h6 class="mb-1 fw-semibold text-primary">
+      
+      </h6>
+      <div>
+        <span class="badge bg-success me-2 p-2">
+          🟢 Suficiente: {{ conteoStock.suficiente }}
+        </span>
+        <span class="badge bg-warning text-dark me-2 p-2">
+          🟡 Bajo: {{ conteoStock.bajo }}
+        </span>
+        <span class="badge bg-danger p-2">
+          🔴 Crítico: {{ conteoStock.critico }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress w-50 mt-2 mt-md-0" style="height: 22px;">
+      <div class="progress-bar bg-success" [style.width.%]="porcentaje.suficiente" title="Suficiente"></div>
+      <div class="progress-bar bg-warning text-dark" [style.width.%]="porcentaje.bajo" title="Bajo"></div>
+      <div class="progress-bar bg-danger" [style.width.%]="porcentaje.critico" title="Crítico"></div>
+    </div>
+  </div>
+</div>
+
+  <table class="table table-sm align-middle shadow-sm border">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Categoría</th>
+        <th>Proveedor</th>
+        <th>Nombre</th>
+        <th>Stock</th>
+        <th>Stock mínimo</th>
+        <th>Unidad</th>
+        <th>Estado</th>
+        <th>Almacenado</th>
+        <th>Precio</th>
+        <th>Descripción</th>
+        <th style="width:120px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let r of items"
+        [ngClass]="{
+          'table-danger': r.stock <= r.stockMinimo,
+          'table-warning': r.stock > r.stockMinimo && r.stock <= (r.stockMinimo * 2),
+          'table-success': r.stock > (r.stockMinimo * 2)
+        }"
+      >
+        <td>{{ r.id }}</td>
+        <td>{{ r?.idCategoria ? getCategoriaNombre(r.idCategoria) : '—' }}</td>
+        <td>{{ r?.idProveedor ? getProveedorNombre(r.idProveedor) : '—' }}</td>
+        <td>{{ r.nombre }}</td>
+
+        <!-- 🔹 Stock con color dinámico -->
+        <td>
+          <span
+            [ngClass]="{
+              'text-danger fw-bold': r.stock <= r.stockMinimo,
+              'text-warning fw-semibold': r.stock > r.stockMinimo && r.stock <= (r.stockMinimo * 2),
+              'text-success fw-semibold': r.stock > (r.stockMinimo * 2)
+            }"
+          >
+            {{ r.stock }}
+          </span>
+        </td>
+
+        <td>{{ r.stockMinimo }}</td>
+        <td>{{ r.unidadMedida || '—' }}</td>
+
+        <!-- Estado -->
+        <td>
+          <span class="badge" [class.bg-success]="r.estado === 1" [class.bg-secondary]="r.estado === 0">
+            {{ r.estado === 1 ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+
+        <td>{{ r.almacenado || '—' }}</td>
+        <td>{{ r.precio | currency:'Q':'symbol-narrow' }}</td>
+        <td>{{ r.descripcion || '—' }}</td>
+
+        <td>
+          <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(r)" type="button">Editar</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="confirmRemove(r.id)" type="button">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+    <!-- Sin resultados -->
+    <div *ngIf="!loading && items.length === 0" class="text-muted">
+      No hay insumos registrados.
+    </div>
+  </div>
+</div>
+<!-- Modal de Confirmación -->
+<div class="modal fade" [class.show]="showDeleteModal" [style.display]="showDeleteModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" (click)="cancelRemove()"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Seguro que deseas eliminar este insumo?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelRemove()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="remove()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- =============================== -->
+<!-- 📊 Modal de uso diario de insumos -->
+<!-- =============================== -->
+<div class="modal fade" [class.show]="showUsoModal" [style.display]="showUsoModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">📊 Usos de insumos del día</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalUso()"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Registro manual -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <h6 class="fw-semibold mb-2">➕ Registrar uso manual</h6>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <select class="form-select" [(ngModel)]="nuevoUso.idInsumo" name="idInsumo">
+                  <option value="0">Seleccione un insumo...</option>
+                  <option *ngFor="let i of items" [value]="i.id">{{ i.nombre }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <input type="number" class="form-control" [(ngModel)]="nuevoUso.cantidad" name="cantidad" placeholder="Cantidad usada">
+              </div>
+              <div class="col-md-5">
+                <input type="text" class="form-control" [(ngModel)]="nuevoUso.justificacion" name="justificacion" placeholder="Justificación (opcional)">
+              </div>
+            </div>
+            <div class="mt-2 text-end">
+              <button class="btn btn-success btn-sm" (click)="registrarUsoManual()">
+                Guardar uso
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 Filtros por fecha -->
+<div class="card mb-3 border-info">
+  <div class="card-body py-2">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label mb-0">Desde:</label>
+        <input type="date" class="form-control" [(ngModel)]="filtro.desde" name="desde">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label mb-0">Hasta:</label>
+        <input type="date" class="form-control" [(ngModel)]="filtro.hasta" name="hasta">
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-outline-primary w-100" (click)="buscarPorRango()">
+          🔍 Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- Tabla de registros -->
+        <div *ngIf="loadingUso" class="text-center py-3">Cargando registros...</div>
+
+        <table *ngIf="!loadingUso && usosHoy.length > 0" class="table table-bordered table-sm align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Hora</th>
+              <th>Insumo</th>
+              <th>Cantidad</th>
+              <th>Examen</th>
+              <th>Justificación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of usosHoy">
+              <td>{{ r.fecha | date:'shortTime' }}</td>
+              <td>{{ r.insumo }}</td>
+              <td>{{ r.cantidad }}</td>
+              <td>{{ r.tipoExamen }}</td>
+              <td>{{ r.justificacion }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!loadingUso && usosHoy.length === 0" class="text-muted">
+          No hay registros de uso para hoy.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModalUso()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

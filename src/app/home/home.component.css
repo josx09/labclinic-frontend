@@ -1,0 +1,88 @@
+/* ===== HERO PROFESIONAL ===== */
+.page-hero{
+  background: linear-gradient(135deg, #0A4A74, #1B76CA 60%, #5BB1E3);
+  color: #fff;
+  padding: 2.5rem 0;
+  border-radius: 14px;
+  margin-bottom: 1.8rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* LOGO A LA DERECHA SUAVE */
+.page-hero::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  width: 95px;
+  height: 95px;
+  transform: translateY(-50%);
+  background-image: url('/assets/img/logo_lab.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 1; 
+}
+
+/* Títulos */
+.page-hero .h3 {
+  font-weight: 600;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+}
+
+.page-hero .lead {
+  opacity: .92;
+  font-size: 1.05rem;
+}
+
+
+/* ===== TARJETAS ===== */
+.tile{
+  border: 0;
+  border-radius: 16px;
+  min-height: 180px;
+  transition: transform .12s ease, box-shadow .12s ease;
+  background: #fff;
+}
+
+.tile .card-body{
+  padding: 1.5rem 1.5rem;           
+}
+
+.tile:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(10, 74, 116, .15); /* sombra acorde al nuevo azul */
+}
+
+/* ICONO */
+.tile-icon{
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 74, 116, .10);
+  color: #0A4A74;
+}
+
+.tile .bi{ 
+  line-height: 1; 
+  font-size: 1.75rem; 
+}
+
+/* ===== BOTÓN ===== */
+.btn-primary {
+  background: linear-gradient(90deg, #1B76CA 0%, #0A4A74 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #0A4A74 0%, #064061 100%);
+}
+
+/* Altura ajustada para pantallas grandes */
+@media (min-width: 992px){
+  .tile{ min-height: 190px; }
+}

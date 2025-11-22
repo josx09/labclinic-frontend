@@ -1,0 +1,91 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Planillas</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_planilla</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_planilla" name="id_planilla">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_empleado</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_empleado" name="id_empleado" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">puesto</label>
+  <input class="form-control" type="text" [(ngModel)]="model.puesto" name="puesto">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_cargo</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_cargo" name="id_cargo" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">salariobase</label>
+  <input class="form-control" type="number" [(ngModel)]="model.salariobase" name="salariobase" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">fechainicio</label>
+  <input class="form-control" type="date" [(ngModel)]="model.fechainicio" name="fechainicio">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">fechafin</label>
+  <input class="form-control" type="date" [(ngModel)]="model.fechafin" name="fechafin">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">nocuenta</label>
+  <input class="form-control" type="text" [(ngModel)]="model.nocuenta" name="nocuenta">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">banco</label>
+  <input class="form-control" type="text" [(ngModel)]="model.banco" name="banco">
+</div>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+      <div *ngIf="error" class="text-danger mt-2">{{error}}</div>
+    </form>
+
+    <hr>
+
+    <!-- LISTADO -->
+    <div *ngIf="loading">Cargando...</div>
+    <div class="table-responsive" *ngIf="!loading">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>id_planilla</th>
+            <th>id_empleado</th>
+            <th>puesto</th>
+            <th>id_cargo</th>
+            <th>salariobase</th>
+            <th>fechainicio</th>
+            <th>fechafin</th>
+            <th>nocuenta</th>
+            <th>banco</th>
+            <th style="width:120px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{r.id_planilla}}</td>
+            <td>{{r.id_empleado}}</td>
+            <td>{{r.puesto}}</td>
+            <td>{{r.id_cargo}}</td>
+            <td>{{r.salariobase}}</td>
+            <td>{{r.fechainicio}}</td>
+            <td>{{r.fechafin}}</td>
+            <td>{{r.nocuenta}}</td>
+            <td>{{r.banco}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(r)" type="button">Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

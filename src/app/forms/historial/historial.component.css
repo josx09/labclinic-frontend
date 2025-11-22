@@ -1,0 +1,262 @@
+/*  ===== HISTORIAL MÉDICO DEL PACIENTE ===== */
+
+/* ===== CONTENEDOR GENERAL ===== */
+.container,
+.historial-container {
+  max-width: 1100px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== ENCABEZADO ===== */
+.header-bar,
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background: linear-gradient(90deg, #007bff, #4facfe);
+  color: #fff;
+  border-radius: 0.75rem 0.75rem 0 0;
+  padding: 1rem 1.25rem;
+}
+
+.header-bar h2,
+.card-header h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 0;
+  color: #fff !important;
+}
+
+.header-bar h2::before,
+.card-header h4::before {
+  content: "📋";
+  font-size: 1.3rem;
+}
+
+/* ===== BOTONES ===== */
+.header-bar .btn,
+.card-header .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.25s ease-in-out;
+}
+
+.btn-outline-light {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.btn-outline-light:hover {
+  background: #fff;
+  color: #007bff;
+}
+
+.btn-success {
+  background: #198754;
+  border: none;
+}
+.btn-success:hover {
+  background: #157347;
+}
+
+/* ===== ACORDEÓN ===== */
+.accordion-item {
+  border: none;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: linear-gradient(90deg, #0d6efd, #3cbefc);
+  color: white;
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.accordion-header:hover {
+  background: linear-gradient(90deg, #0a58ca, #20a6ef);
+}
+.rotate {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+/* ===== CUERPO DEL ACORDEÓN ===== */
+.accordion-body {
+  background: #fff;
+  border-left: 4px solid #0d6efd;
+  border-radius: 0 0 8px 8px;
+  padding: 1rem;
+  animation: fadeSlideIn 0.4s ease;
+}
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== TABLA ===== */
+.table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+.table thead th {
+  background-color: #007bff !important;
+  color: white;
+  font-weight: 600;
+}
+.table-hover tbody tr:hover {
+  background-color: #f1f8ff;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  font-size: 0.8rem;
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+.badge.bg-success {
+  background-color: #28a745 !important;
+}
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+/* ===== BOTÓN INFERIOR ===== */
+.text-end button.btn-sm {
+  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 6px;
+}
+.text-end button.btn-sm:hover {
+  background-color: #0d6efd;
+  color: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  .header-bar,
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .header-bar h2,
+  .card-header h4 {
+    font-size: 1.25rem;
+  }
+  .header-bar .btn,
+  .card-header .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+/*  Fin del bloque responsive */
+
+
+/* =====  Corrección visual de botones superiores ===== */
+.card-header .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Botón "Regresar" y "Imprimir historial" */
+.btn-outline-light {
+  background-color: transparent !important;
+  color: #ffffff !important; /* 🔹 asegura texto visible sobre fondo azul */
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+.btn-outline-light:hover {
+  background-color: #ffffff !important;
+  color: #0d6efd !important;
+}
+
+/* Botón "Imprimir resultados" */
+.btn-success {
+  background-color: #198754 !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+.btn-success:hover {
+  background-color: #157347 !important;
+  transform: translateY(-1px);
+}
+
+/* ===== Íconos dentro de los botones ===== */
+.card-header .btn i {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+/* ===== Aumentar contraste del título ===== */
+.card-header h4 {
+  color: #3a15e0 !important;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+/* =====  CORRECCIÓN VISUAL DE BOTONES EN ENCABEZADO ===== */
+.card-header .btn {
+  color: #183cda !important;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  background-color: transparent !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-header .btn:hover {
+  background-color: #ffffff !important;
+  color: #0d6efd !important;
+}
+
+/* Botón verde (Imprimir resultados) */
+.card-header .btn-success {
+  background-color: #198754 !important;
+  border: none !important;
+  color: #eae9f0 !important;
+}
+.card-header .btn-success:hover {
+  background-color: #157347 !important;
+  transform: translateY(-1px);
+}
+
+/* Asegura que el texto del encabezado no herede opacidad */
+.card-header.text-white h4,
+.card-header.text-white {
+  color: #3208ec !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); 
+}

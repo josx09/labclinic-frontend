@@ -1,0 +1,86 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3 text-primary fw-semibold">📂 Categorías de Tipos de Examen</h2>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+        <div class="col-md-5 mb-2">
+          <label class="form-label">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="model.nombre"
+            name="nombre"
+            placeholder="Ej: Hematología"
+            required
+          />
+        </div>
+
+        <div class="col-md-5 mb-2">
+          <label class="form-label">Descripción</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="model.descripcion"
+            name="descripcion"
+            placeholder="Ej: Exámenes de sangre"
+          />
+        </div>
+
+        <div class="col-md-2 mb-2 d-flex align-items-end">
+          <button class="btn btn-primary w-100" type="submit">
+            {{ editingId ? 'Actualizar' : 'Guardar' }}
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Alertas -->
+    <div *ngIf="error" class="alert alert-danger mt-2">{{ error }}</div>
+    <div *ngIf="success" class="alert alert-success mt-2">{{ success }}</div>
+
+    <hr />
+
+    <!-- Tabla de categorías -->
+    <div *ngIf="loading" class="text-muted">Cargando categorías...</div>
+
+    <div *ngIf="!loading && categorias.length > 0" class="table-responsive mt-3">
+      <table class="table table-sm table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Exámenes asociados</th>
+            <th style="width: 150px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of categorias">
+            <td>{{ c.nombre }}</td>
+            <td>{{ c.descripcion }}</td>
+            <td>{{ c.totalExamenes ?? 0 }}</td>
+            <td>
+              <button
+                class="btn btn-sm btn-outline-primary me-1"
+                (click)="edit(c)"
+              >
+                ✏️ Editar
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="remove(c)"
+              >
+                🗑️ Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!loading && categorias.length === 0" class="alert alert-info mt-3">
+      No hay categorías registradas.
+    </div>
+  </div>
+</div>

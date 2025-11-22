@@ -1,0 +1,73 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Facturas</h2>
+
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="save()">
+      <div class="row">
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_factura</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_factura" name="id_factura">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">id_pago</label>
+  <input class="form-control" type="number" [(ngModel)]="model.id_pago" name="id_pago" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">fecha_factura</label>
+  <input class="form-control" type="datetime-local" [(ngModel)]="model.fecha_factura" name="fecha_factura">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">monto_total</label>
+  <input class="form-control" type="number" [(ngModel)]="model.monto_total" name="monto_total" required>
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">NIT</label>
+  <input class="form-control" type="text" [(ngModel)]="model.NIT" name="NIT">
+</div>
+<div class="col-md-6 mb-2">
+  <label class="form-label">Detalle</label>
+  <input class="form-control" type="text" [(ngModel)]="model.Detalle" name="Detalle">
+</div>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-primary me-2" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" (click)="reset()">Nuevo</button>
+      </div>
+      <div *ngIf="error" class="text-danger mt-2">{{error}}</div>
+    </form>
+
+    <hr>
+
+    <!-- LISTADO -->
+    <div *ngIf="loading">Cargando...</div>
+    <div class="table-responsive" *ngIf="!loading">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>id_factura</th>
+            <th>id_pago</th>
+            <th>fecha_factura</th>
+            <th>monto_total</th>
+            <th>NIT</th>
+            <th>Detalle</th>
+            <th style="width:120px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of items">
+            <td>{{r.id_factura}}</td>
+            <td>{{r.id_pago}}</td>
+            <td>{{r.fecha_factura}}</td>
+            <td>{{r.monto_total}}</td>
+            <td>{{r.NIT}}</td>
+            <td>{{r.Detalle}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(r)" type="button">Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

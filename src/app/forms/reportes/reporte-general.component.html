@@ -1,0 +1,145 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4 fw-bold text-primary">
+    📊 Reporte General del Laboratorio
+  </h2>
+
+  <!--  Alerta visual -->
+  <div id="alertBox" class="alert text-center fw-semibold" style="display:none;"></div>
+
+  <div class="card mb-4 p-4 shadow-lg">
+    <!--  Filtros -->
+    <div class="row g-3 align-items-center mb-2">
+      <div class="col-md-3">
+        <label for="desde" class="form-label fw-semibold">Desde:</label>
+        <input type="date" id="desde" [(ngModel)]="filtro.desde" class="form-control form-control-lg" />
+      </div>
+      <div class="col-md-3">
+        <label for="hasta" class="form-label fw-semibold">Hasta:</label>
+        <input type="date" id="hasta" [(ngModel)]="filtro.hasta" class="form-control form-control-lg" />
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary w-100 btn-lg" (click)="cargarDatos()">Filtrar</button>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-secondary w-100 btn-lg" (click)="limpiarFiltro()">Limpiar</button>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <!--  Reportes individuales -->
+    <h5 class="fw-bold mb-3">📄 Reportes individuales:</h5>
+    <div class="d-flex flex-wrap gap-3 mb-3">
+      <button class="btn btn-primary btn-lg shadow-sm" (click)="descargarPDF('pacientes')">👥 Pacientes</button>
+      <button class="btn btn-warning btn-lg text-dark shadow-sm" (click)="descargarPDF('referidos')">🤝 Referidos</button>
+      <button class="btn btn-success btn-lg shadow-sm" (click)="descargarPDF('examenes')">🧪 Exámenes</button>
+      <button class="btn btn-info btn-lg text-white shadow-sm" (click)="descargarPDF('activos')">💠 Activos</button>
+    </div>
+
+    <!-- Reportes individuales Excel -->
+    <div class="d-flex flex-wrap gap-3 mb-4">
+      <button class="btn btn-outline-primary btn-lg" (click)="exportarExcel('pacientes')">📊 Excel Pacientes</button>
+      <button class="btn btn-outline-warning btn-lg" (click)="exportarExcel('referidos')">📊 Excel Referidos</button>
+      <button class="btn btn-outline-success btn-lg" (click)="exportarExcel('examenes')">📊 Excel Exámenes</button>
+      <button class="btn btn-outline-info btn-lg" (click)="exportarExcel('activos')">📊 Excel Activos</button>
+    </div>
+
+    <hr class="my-4" />
+
+    <!-- Reporte de resultados clínicos -->
+    <h5 class="fw-bold mb-3">🧬 Reporte clínico por paciente:</h5>
+    <div class="row g-3 align-items-center mb-4">
+      <div class="col-md-4">
+        <label for="pacienteId" class="form-label fw-semibold">ID del Paciente:</label>
+        <input
+          id="pacienteId"
+          type="number"
+          class="form-control form-control-lg"
+          #idPacienteInput
+          placeholder="Ejemplo: 12"
+        />
+      </div>
+      <div class="col-md-8 d-flex align-items-end">
+        <button
+          class="btn btn-outline-danger btn-lg w-100 shadow-sm"
+          (click)="descargarResultadosPaciente(idPacienteInput.value, filtro.desde, filtro.hasta)"
+        >
+          🧾 Generar PDF de Resultados Clínicos
+        </button>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <!--  Checkboxes para reporte general -->
+    <h5 class="fw-bold mb-3">
+      <i class="bi bi-check2-square"></i> Selecciona para reporte general:
+    </h5>
+    <div
+      class="form-check mb-3"
+      *ngFor="let item of ['pacientes', 'referidos', 'examenes', 'activos']"
+      style="font-size: 1.3rem;"
+    >
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [(ngModel)]="incluir[item]"
+        style="width: 26px; height: 26px; margin-right: 12px;"
+        id="{{ item }}Check"
+      />
+      <label class="form-check-label text-capitalize fw-semibold" [for]="item + 'Check'">
+        {{ item }}
+      </label>
+    </div>
+
+    <!--  Botones de acción general -->
+    <div class="d-flex flex-wrap gap-3 mt-4">
+      <button
+        class="btn btn-danger btn-lg flex-fill"
+        (click)="generarReporteGeneral()"
+        style="font-size: 1.1rem; padding: 12px 20px;"
+      >
+        <i class="bi bi-file-earmark-pdf"></i> Generar Reporte General (PDF)
+      </button>
+
+      <button
+        class="btn btn-success btn-lg flex-fill"
+        (click)="exportarExcelGeneral()"
+        style="font-size: 1.1rem; padding: 12px 20px;"
+      >
+        <i class="bi bi-file-earmark-excel"></i> Exportar Reporte General (Excel)
+      </button>
+    </div>
+
+    <!-- Cargando -->
+    <div *ngIf="cargando" class="text-center mt-4">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+      <p class="mt-3 fw-semibold text-secondary">Generando reporte, por favor espera...</p>
+    </div>
+  </div>
+
+  <!-- Tarjetas resumen -->
+  <div class="row text-center mb-4">
+    <div
+      class="col-md-3 mb-3"
+      *ngFor="let item of [
+        {titulo:'Pacientes', valor: resumen.totalPacientes, color:'primary'},
+        {titulo:'Referidos', valor: resumen.totalReferidos, color:'warning text-dark'},
+        {titulo:'Exámenes', valor: resumen.totalExamenes, color:'success'},
+        {titulo:'Activos', valor: resumen.totalActivos, color:'info'}
+      ]"
+    >
+      <div class="card shadow text-white bg-{{item.color}}">
+        <div class="card-body py-3">
+          <h5 class="fw-bold">{{ item.titulo }}</h5>
+          <h3 class="fw-bolder">{{ item.valor }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  Gráfico -->
+  <div class="card shadow p-4">
+    <canvas id="graficoGeneral" width="400" height="180"></canvas>
+  </div>
+</div>

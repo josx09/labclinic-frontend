@@ -1,0 +1,31 @@
+export const Endpoints = {
+  persona: 'personas',
+  client_list: 'client_list',
+  test_list: 'test_list',
+  tipoexamen: 'tipos-examen',
+  examen: 'examenes',
+  parametro: 'parametros',
+  parametro_Tipo_Examen: 'parametros-tipo-examen',
+  insumolaboratorio: 'insumolaboratorio',
+  categoriainsumo: 'categoriainsumo',
+  proveedor: 'proveedor',
+  empleado: 'empleados',
+  cargo: 'cargos',
+  fechacita: 'fecha-cita',
+  registrohorariofechas: 'registro-horario',
+  cita: 'citas',
+  pago: 'pagos',
+  tipopago: 'tipo-pago',
+  facturapago: 'facturas',
+  cotizacion: 'cotizaciones',
+  appointment_list: 'appointment_list',
+  appointment_test_list: 'appointment_test_list',
+  municipios: 'municipios',
+  direccion:'direccion',
+  departamento: 'departamentos',
+  rol: 'roles',
+  bono: 'bonos',
+  users: 'users'
+} as const;
+
+
